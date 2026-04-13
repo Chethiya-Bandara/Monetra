@@ -1,14 +1,19 @@
 "use client";
 
-import { useState } from "react"; // Added for input tracking
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Wallet, ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import dynamic from 'next/dynamic';
+import { Wallet, ArrowRight, Loader2, AlertCircle, ChevronLeft } from "lucide-react";
+
+const Prism = dynamic(() => import("../../../components/Prism"), { 
+  ssr: false,
+  loading: () => <div className="fixed inset-0 bg-slate-50 dark:bg-slate-950" />
+});
 
 export default function LoginPage() {
   const router = useRouter();
 
-  // 1. State for form inputs and UI feedback
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,7 +25,6 @@ export default function LoginPage() {
     setError("");
 
     try {
-      // 2. Call to FastAPI backend
       const response = await fetch("http://localhost:8000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -29,30 +33,50 @@ export default function LoginPage() {
 
       const data = await response.json();
 
-        if (response.ok && data.access_token) {
-          localStorage.setItem("token", data.access_token); 
-          
-          console.log("Token saved:", localStorage.getItem("token"));
-          
-          router.push("/dashboard");
-        }
-
-      // 3. Save the JWT token from Supabase/FastAPI
-      localStorage.setItem("token", data.access_token);
-
-      // 4. Navigate to the protected dashboard
-      router.push("/dashboard");
+      if (response.ok && data.access_token) {
+        localStorage.setItem("token", data.access_token);
+        router.push("/dashboard");
+      } else {
+        setError(data.detail || "Invalid email or password");
+      }
     } catch (err: any) {
-      setError(err.message);
+      setError("Unable to connect to the server. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-center py-12 px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="inline-flex bg-indigo-600 p-3 rounded-2xl mb-4 shadow-lg shadow-indigo-200 dark:shadow-none">
+    <div className="relative min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-center py-12 px-6 lg:px-8 overflow-hidden">
+      
+      {/* 1. BACKGROUND PRISM */}
+      <div className="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-60 dark:opacity-50">
+        <Prism
+          animationType="rotate"
+          timeScale={0.3}
+          height={3.5}
+          baseWidth={5.5}
+          scale={2.8}      
+          hueShift={0}     
+          colorFrequency={1.2} 
+          noise={0.02}
+          glow={0.9}       
+        />
+      </div>
+
+      {/* 2. BACK BUTTON */}
+      <div className="absolute top-8 left-8 z-20">
+        <Link 
+          href="/" 
+          className="group flex items-center gap-1 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 transition-colors font-medium text-sm"
+        >
+          <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+          Back to Home
+        </Link>
+      </div>
+
+      <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md text-center">
+        <div className="inline-flex bg-indigo-600 p-3 rounded-2xl mb-4 shadow-lg shadow-indigo-500/20">
           <Wallet className="w-8 h-8 text-white" />
         </div>
         <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -66,10 +90,10 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white dark:bg-slate-900 py-8 px-10 shadow-xl rounded-3xl border border-slate-100 dark:border-slate-800">
+      <div className="relative z-10 mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        {/* Card with Glassmorphism */}
+        <div className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl py-8 px-10 shadow-2xl rounded-3xl border border-slate-200/50 dark:border-slate-800/50">
           
-          {/* Error Alert Display */}
           {error && (
             <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400 text-sm rounded-xl flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -87,7 +111,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                className="mt-1 block w-full rounded-xl border border-slate-200/60 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
                 placeholder="you@example.com"
               />
             </div>
@@ -101,7 +125,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                className="mt-1 block w-full rounded-xl border border-slate-200/60 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
                 placeholder="••••••••"
               />
             </div>
@@ -109,7 +133,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-lg shadow-indigo-500/30 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />

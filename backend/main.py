@@ -7,6 +7,7 @@ from auth import get_current_user
 from typing import List
 from pydantic import BaseModel
 from supabase import create_client, Client
+import google.generativeai as genai
 
 app = FastAPI()
 
@@ -97,6 +98,37 @@ async def login(credentials: LoginRequest):
     except Exception as e:
         # Supabase throws an exception if credentials are wrong
         raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+# Configure Gemini for chatbot
+genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+model = genai.GenerativeModel('gemini-2.5-flash')
+try:
+    print("--- Available Models ---")
+    for m in genai.list_models():
+        if 'generateContent' in m.supported_generation_methods:
+            print(f"Model: {m.name}")
+    print("------------------------")
+except Exception as e:
+    print(f"Could not list models: {e}")
+
+class ChatRequest(BaseModel):
+    message: str
+
+@app.post("/chat")
+async def chat_with_ai(request: ChatRequest, user_id: str = Depends(get_current_user)):
+    # 1. Fetch user data so Gemini has "context"
+    response = supabase.table("transactions").select("*").eq("user_id", user_id).execute()
+    transactions = response.data
+
+    # 2. Create the system prompt
+    context = f"You are a helpful financial assistant. Here is the user's transaction history: {transactions}. "
+    context += "Answer the user's question based on this data. Be concise and professional."
+
+    # 3. Get response from Gemini
+    full_prompt = f"{context}\n\nUser Question: {request.message}"
+    ai_response = model.generate_content(full_prompt)
+    
+    return {"reply": ai_response.text}
 
 if __name__ == "__main__":
     import uvicorn
