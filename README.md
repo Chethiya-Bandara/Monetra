@@ -19,7 +19,9 @@
 * **Transaction Management:** Add, track, and categorize expenses and income.
 * **Real-time Totals:** Dynamic calculation of balances based on transaction history.
 * **Robust Backend:** FastAPI middleware for CORS and Pydantic for strict data schema enforcement.
-* **Secure Database:** Row Level Security (RLS) ensures users can only access their own financial records.
+* **AI Insights:** Get insights from a personal AI chatbot into spending / income.
+* **Spending/Income Visualization:** Charts displaying spending / income trends.
+* **User Friendly UI:** UI that feels user friendly (Some components taken from https://reactbits.dev/).
 
 ---
 
@@ -39,13 +41,14 @@
     ```
 3.  Install dependencies:
     ```bash
-    pip install fastapi uvicorn PyJWT cryptography supabase
+    pip install -r requirements.txt
     ```
 4.  Create a `.env` file:
     ```env
     SUPABASE_URL=your_supabase_url
     SUPABASE_KEY=your_service_role_key
     SUPABASE_JWT_SECRET=your_jwt_secret
+    GOOGLE_API_KEY=your_gemini_api_key
     ```
 5.  Start the server:
     ```bash
