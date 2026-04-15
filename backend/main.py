@@ -11,7 +11,7 @@ import google.generativeai as genai
 
 app = FastAPI()
 
-# ✅ FIX: Allow Frontend to talk to Backend
+# Allow Frontend to talk to Backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
