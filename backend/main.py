@@ -142,7 +142,6 @@ async def chat_with_ai(request: ChatRequest, user_id: str = Depends(get_current_
         "Analyze the user's spending patterns based on the JSON data provided below. "
         "Focus on identifying trends, highlighting overspending in specific categories, "
         "and suggesting ways to save. Be encouraging but direct. "
-        "Use Markdown for bolding and lists. Keep it brief."
     )
 
     # Change the prompt to ask for JSON
