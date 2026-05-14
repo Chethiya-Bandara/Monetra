@@ -60,7 +60,7 @@ export default function LandingPage() {
             href="/login" 
             className="px-6 py-2 rounded-xl bg-white/10 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200 dark:border-slate-800 text-sm font-bold shadow-sm hover:scale-105 transition-all"
           >
-            Sign in
+            Log in
           </Link>
         </nav>
 
@@ -78,7 +78,7 @@ export default function LandingPage() {
               href="/register" 
               className="group flex items-center justify-center gap-2 bg-indigo-600 text-white px-10 py-5 rounded-2xl font-bold shadow-2xl shadow-indigo-500/40 transition-all hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98]"
             >
-              Sign Up for free.
+              Sign Up.
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>

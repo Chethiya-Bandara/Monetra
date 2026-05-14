@@ -44,7 +44,8 @@ export default function Home() {
       text: formData.text,
       amount: Number(formData.amount),
       type: formData.type.toLowerCase(),
-      date: formData.date || new Date().toISOString()
+      date: formData.date || new Date().toISOString(),
+      category: formData.category
     };
 
     try {

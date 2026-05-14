@@ -5,5 +5,3 @@ supabase
 pydantic
 cryptography
 google-generativeai
-prophet 
-pandas

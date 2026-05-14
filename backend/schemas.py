@@ -7,6 +7,7 @@ class TransactionBase(BaseModel):
     amount: float
     type: Literal['income', 'expense']
     date: str
+    category: str
 
 class TransactionCreate(TransactionBase):
     pass

@@ -32,20 +32,20 @@ async def get_transactions(user_id: str = Depends(get_current_user)):
 
 @app.post("/transactions")
 async def create_transaction(transaction: TransactionBase, user_id: str = Depends(get_current_user)):
-    # ✅ FIX: Map 'text' from frontend to 'description' in Supabase
     transaction_data = {
         "user_id": user_id,
         "amount": transaction.amount,
         "type": transaction.type,
         "description": transaction.text,
-        "date": transaction.date
+        "date": transaction.date,
+        "category": transaction.category
     }
     
     try:
         response = supabase.table("transactions").insert(transaction_data).execute()
         return response.data[0]
     except Exception as e:
-        print(f"❌ DB ERROR: {e}")
+        print(f"DB ERROR: {e}")
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.delete("/transactions/{id}")
