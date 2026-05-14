@@ -1,6 +1,6 @@
 from pydantic import BaseModel
-from datetime import datetime
-from typing import Literal
+from datetime import datetime, date
+from typing import Literal, Optional
 
 class TransactionBase(BaseModel):
     text: str
@@ -19,3 +19,17 @@ class Transaction(TransactionBase):
 
     class Config:
         from_attributes = True
+
+
+class RecurringTransactionBase(BaseModel):
+    amount: float
+    type: Literal['income', 'expense']
+    frequency: Literal['daily', 'weekly', 'monthly']
+    category: str = "General"
+    description: Optional[str] = None
+    start_date: str
+    end_date: Optional[str] = None
+
+class RecurringTransaction(RecurringTransactionBase):
+    id: str
+    user_id: str

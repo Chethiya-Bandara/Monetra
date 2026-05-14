@@ -6,6 +6,7 @@ import { Transaction } from "@/types";
 import SummaryCards from "../../../components/SummaryCards";
 import TransactionForm from "../../../components/TransactionForm";
 import TransactionList from "../../../components/TransactionList";
+import FinancialInsights from "../../../components/FinancialInsights";
 import ChatBot from "../../../components/ChatBot";
 import { Wallet, LogOut, Loader2 } from "lucide-react"; 
 import { ThemeToggle } from "../../../components/ThemeToggle";
@@ -136,6 +137,7 @@ export default function Home() {
         {/* Right Content: Stats and Transactions */}
         <div className="flex-1 space-y-8">
           <SummaryCards balance={totalBalance} income={income} expense={expense} />
+          <FinancialInsights />
           <div className="grid xl:grid-cols-3 gap-8 items-start">
             <div className="xl:col-span-1"><TransactionForm onAdd={handleAdd} /></div>
             <div className="xl:col-span-2"><TransactionList transactions={transactions} onDelete={handleDelete} /></div>

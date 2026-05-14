@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from database import supabase
-from schemas import TransactionCreate, Transaction, TransactionBase
+from schemas import TransactionCreate, Transaction, TransactionBase, RecurringTransactionBase
 from auth import get_current_user
 from typing import List
 from pydantic import BaseModel
@@ -116,19 +116,75 @@ class ChatRequest(BaseModel):
 
 @app.post("/chat")
 async def chat_with_ai(request: ChatRequest, user_id: str = Depends(get_current_user)):
-    # 1. Fetch user data so Gemini has "context"
+    # 1. Fetch user data
     response = supabase.table("transactions").select("*").eq("user_id", user_id).execute()
     transactions = response.data
 
-    # 2. Create the system prompt
-    context = f"You are a helpful financial assistant. Here is the user's transaction history: {transactions}. "
-    context += "Answer the user's question based on this data. Be concise and professional."
+    # 2. Guard rail: Check if data exists
+    if not transactions:
+        return {"reply": "I don't see any transactions in your account yet. Add some expenses or income so I can analyze your finances!"}
 
-    # 3. Get response from Gemini
-    full_prompt = f"{context}\n\nUser Question: {request.message}"
-    ai_response = model.generate_content(full_prompt)
+    # 3. Clean the data (Removes sensitive/redundant fields to save tokens)
+    # We only keep what's relevant for financial logic
+    essential_data = [
+        {
+            "amount": t["amount"],
+            "category": t["category"],
+            "type": t["type"],
+            "description": t["description"],
+            "date": t["date"]
+        } for t in transactions
+    ]
+
+    # 4. Refined System Context
+    system_context = (
+        "You are Monetra AI, a professional financial assistant. "
+        "Analyze the user's spending patterns based on the JSON data provided below. "
+        "Focus on identifying trends, highlighting overspending in specific categories, "
+        "and suggesting ways to save. Be encouraging but direct. "
+        "Use Markdown for bolding and lists. Keep it brief."
+    )
+
+    # Change the prompt to ask for JSON
+    full_prompt = (
+        f"{system_context}\n"
+        "Respond in JSON format: { 'reply': '...', 'health_score': 0-100, 'alert_category': '...' }\n"
+        f"Data: {essential_data}\nQuestion: {request.message}"
+    )
+
+    # And use the generation config
+    ai_response = model.generate_content(
+        full_prompt, 
+        generation_config={"response_mime_type": "application/json"}
+    )
+
+    # 5. Get response from Gemini
+    try:
+        full_prompt = f"{system_context}\n\nUser Transactions: {essential_data}\n\nUser Question: {request.message}"
+        ai_response = model.generate_content(full_prompt)
+        return {"reply": ai_response.text}
+    except Exception as e:
+        print(f"Gemini Error: {e}")
+        raise HTTPException(status_code=500, detail="AI service is currently unavailable.")
     
-    return {"reply": ai_response.text}
+@app.post("/recurring-transactions")
+async def create_recurring(transaction: RecurringTransactionBase, user_id: str = Depends(get_current_user)):
+    data = {
+        "user_id": user_id,
+        "amount": transaction.amount,
+        "type": transaction.type,
+        "frequency": transaction.frequency,
+        "category": transaction.category,
+        "description": transaction.description,
+        "start_date": transaction.start_date,
+        "end_date": transaction.end_date
+    }
+    
+    try:
+        response = supabase.table("recurring_transactions").insert(data).execute()
+        return response.data[0]
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
