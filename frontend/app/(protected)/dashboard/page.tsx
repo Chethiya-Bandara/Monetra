@@ -1,5 +1,6 @@
 "use client";
 
+import ChatBotPopup from "../../../components/ChatBotPopup";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Transaction } from "@/types";
@@ -127,12 +128,15 @@ export default function Home() {
       </header>
 
       {/* Main Content Layout with Sidebar */}
-      <div className="max-w-7xl mx-auto px-6 mt-8 flex flex-col lg:flex-row gap-8">
+      {/* <div className="max-w-7xl mx-auto px-6 mt-8 flex flex-col lg:flex-row gap-8"> */}
+      <div className="max-w-7xl mx-auto px-6 mt-8">
         
         {/* Left Sidebar: ChatBot */}
+        {/*
         <aside className="lg:w-80 w-full shrink-0 sticky top-24 self-start">
           <ChatBot />
         </aside>
+        */}
 
         {/* Right Content: Stats and Transactions */}
         <div className="flex-1 space-y-8">
@@ -144,6 +148,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <ChatBotPopup />
     </main>
   );
 }
