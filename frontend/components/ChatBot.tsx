@@ -78,7 +78,7 @@ export default function ChatBot() {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col h-[500px] shadow-sm transition-colors">
+    <div className="bg-white dark:bg-emerald-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col h-[500px] shadow-sm transition-colors">
 
       {/* Header */}
       <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2 font-bold text-slate-800 dark:text-white">
@@ -125,12 +125,12 @@ export default function ChatBot() {
             e.key === "Enter" && sendMessage()
           }
           placeholder="Ask about your spending..."
-          className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl px-4 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+          className="flex-1 bg-emerald-50 dark:bg-emerald-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-200 dark:placeholder:text-slate-500 rounded-xl px-4 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
         />
 
         <button
           onClick={sendMessage}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-xl transition-colors"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-xl transition-colors"
         >
           <Send className="w-5 h-5" />
         </button>

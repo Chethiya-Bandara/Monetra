@@ -51,7 +51,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-center py-12 px-6 lg:px-8 overflow-hidden">
+    <div className="relative min-h-screen bg-emerald-50 dark:bg-emerald-950 flex flex-col justify-center py-12 px-6 lg:px-8 overflow-hidden">
       
       {/* 1. BACKGROUND PRISM */}
       <div className="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-60 dark:opacity-50">
@@ -88,7 +88,7 @@ export default function RegisterPage() {
         </h2>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
           Already have an account?{" "}
-          <Link href="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
+          <Link href="/login" className="font-semibold text-emerald-600 hover:text-emerald-500">
             Sign in
           </Link>
         </p>
@@ -151,7 +151,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-lg shadow-indigo-500/30 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-lg shadow-emerald-500/30 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />

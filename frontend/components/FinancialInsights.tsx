@@ -48,13 +48,13 @@ export default function FinancialInsights() {
   useEffect(() => { fetchInsight(); }, []);
 
   return (
-    <div className="bg-gradient-to-br from-indigo-50 to-white dark:from-slate-800/50 dark:to-slate-900 p-6 rounded-2xl border border-indigo-100 dark:border-slate-800 shadow-sm transition-all">
+    <div className="bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-800/50 dark:to-emerald-900 p-6 rounded-2xl border border-indigo-100 dark:border-slate-800 shadow-sm transition-all">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           <h3 className="font-bold text-slate-800 dark:text-white">Monetra AI Insights</h3>
         </div>
-        <button onClick={fetchInsight} className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">Refresh</button>
+        <button onClick={fetchInsight} className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">Refresh</button>
       </div>
 
       {loading ? (

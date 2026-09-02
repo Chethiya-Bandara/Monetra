@@ -3,10 +3,10 @@ import { Trash2, TrendingDown, TrendingUp, ReceiptText } from "lucide-react";
 
 export default function TransactionList({ transactions, onDelete }: any) {
   return (
-    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-full transition-colors">
+    <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 h-full transition-colors">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-slate-800 dark:text-white">Recent Activity</h3>
-        <span className="text-xs font-medium px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-md">
+        <span className="text-xs font-medium px-2 py-1 bg-emerald-100 dark:bg-emerald-800 text-slate-500 dark:text-slate-400 rounded-md">
           {transactions.length} total
         </span>
       </div>
@@ -44,7 +44,7 @@ export default function TransactionList({ transactions, onDelete }: any) {
 
               <div className="flex items-center gap-4">
                 <span className={`font-bold text-lg ${
-                  t.type === 'income' ? 'text-emerald-600 dark:text-emerald-500' : 'text-red-500 dark:text-red-500'
+                  t.type === 'income' ? 'text-emerald-600 dark:text-emerald-500' : 'text-rose-500 dark:text-rose-500'
                 }`}>
                   {t.type === 'income' ? '+' : '-'}Rs.{t.amount.toFixed(2)}
                 </span>

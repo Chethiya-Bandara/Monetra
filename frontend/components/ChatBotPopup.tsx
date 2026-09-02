@@ -12,10 +12,10 @@ export default function ChatBotPopup() {
       {/* Chatbot Popup */}
       {isOpen && (
         <div className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)]">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <div className="bg-white dark:bg-emerald-900 rounded-2xl shadow-2xl border border-emerald-200 dark:border-emerald-700 overflow-hidden">
 
             {/* Popup Header */}
-            <div className="flex items-center justify-between px-4 py-3 bg-indigo-600 text-white">
+            <div className="flex items-center justify-between px-4 py-3 bg-emerald-600 text-white">
               <div className="flex items-center gap-2">
                 <MessageCircle className="w-5 h-5" />
                 <span className="font-semibold">
@@ -25,7 +25,7 @@ export default function ChatBotPopup() {
 
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1 rounded-lg hover:bg-indigo-500 transition"
+                className="p-1 rounded-lg hover:bg-emerald-500 transition"
                 aria-label="Close chatbot"
               >
                 <X className="w-5 h-5" />
@@ -44,7 +44,7 @@ export default function ChatBotPopup() {
       {/* Floating Chat Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 hover:scale-105 transition-all flex items-center justify-center"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 hover:scale-105 transition-all flex items-center justify-center"
         aria-label={isOpen ? "Close chatbot" : "Open chatbot"}
       >
         {isOpen ? (

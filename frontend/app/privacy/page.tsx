@@ -5,49 +5,56 @@ import { ArrowLeft, ShieldCheck } from "lucide-react";
 
 export default function PrivacyPolicy() {
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <main className="min-h-screen bg-emerald-50 dark:bg-zinc-950 text-emerald-950 dark:text-emerald-50 transition-colors">
+
       {/* Header */}
-      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+      <header className="bg-emerald-100 dark:bg-emerald-950 border-b border-emerald-200 dark:border-emerald-900">
         <div className="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between">
+
           <Link
             href="/dashboard"
-            className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            className="flex items-center gap-2 text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Dashboard
           </Link>
 
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-            <span className="font-bold text-slate-800 dark:text-white">
+            <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+
+            <span className="font-bold text-emerald-900 dark:text-white">
               Monetra
             </span>
           </div>
+
         </div>
       </header>
 
       {/* Content */}
       <section className="max-w-4xl mx-auto px-6 py-12">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 md:p-10">
+
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-emerald-200 dark:border-emerald-900 shadow-sm p-8 md:p-10">
 
           <div className="mb-10">
-            <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 mb-2">
+
+            <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
               MONETRA
             </p>
 
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
+            <h1 className="text-3xl md:text-4xl font-bold text-emerald-950 dark:text-white">
               Privacy Policy
             </h1>
 
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-3">
+            <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-3">
               Last updated: September 2, 2026
             </p>
+
           </div>
 
-          <div className="space-y-8 text-slate-600 dark:text-slate-300 leading-7">
+          <div className="space-y-8 text-emerald-800 dark:text-emerald-100 leading-7">
 
             <section>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+              <h2 className="text-xl font-bold text-emerald-950 dark:text-white mb-3">
                 1. Introduction
               </h2>
 
@@ -67,7 +74,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+              <h2 className="text-xl font-bold text-emerald-950 dark:text-white mb-3">
                 2. Information We Collect
               </h2>
 
@@ -99,7 +106,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+              <h2 className="text-xl font-bold text-emerald-950 dark:text-white mb-3">
                 3. How Your Information Is Used
               </h2>
 
@@ -119,7 +126,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+              <h2 className="text-xl font-bold text-emerald-950 dark:text-white mb-3">
                 4. AI and Third-Party Services
               </h2>
 
@@ -145,7 +152,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+              <h2 className="text-xl font-bold text-emerald-950 dark:text-white mb-3">
                 5. Data Storage
               </h2>
 
@@ -165,7 +172,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+              <h2 className="text-xl font-bold text-emerald-950 dark:text-white mb-3">
                 6. Data Security
               </h2>
 
@@ -183,7 +190,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+              <h2 className="text-xl font-bold text-emerald-950 dark:text-white mb-3">
                 7. Data Retention and Deletion
               </h2>
 
@@ -202,7 +209,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+              <h2 className="text-xl font-bold text-emerald-950 dark:text-white mb-3">
                 8. Children's Privacy
               </h2>
 
@@ -216,7 +223,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+              <h2 className="text-xl font-bold text-emerald-950 dark:text-white mb-3">
                 9. Changes to This Privacy Policy
               </h2>
 
@@ -228,7 +235,7 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+              <h2 className="text-xl font-bold text-emerald-950 dark:text-white mb-3">
                 10. Contact
               </h2>
 
@@ -242,8 +249,8 @@ export default function PrivacyPolicy() {
           </div>
 
           {/* Footer */}
-          <div className="mt-12 pt-6 border-t border-slate-200 dark:border-slate-800">
-            <p className="text-xs text-slate-400 dark:text-slate-500 text-center">
+          <div className="mt-12 pt-6 border-t border-emerald-200 dark:border-emerald-900">
+            <p className="text-xs text-emerald-600 dark:text-emerald-500 text-center">
               © 2026 Monetra · Personal Finance Manager
             </p>
           </div>

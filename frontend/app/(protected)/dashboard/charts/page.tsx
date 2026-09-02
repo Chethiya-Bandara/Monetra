@@ -10,7 +10,6 @@ import {
   Wallet,
   Receipt,
   LogOut,
-  BarChart3,
 } from "lucide-react";
 
 import { ThemeToggle } from "../../../../components/ThemeToggle";
@@ -46,7 +45,8 @@ interface Transaction {
 
 export default function ChartsPage() {
   const router = useRouter();
-    const handleLogout = () => {
+
+  const handleLogout = () => {
     localStorage.removeItem("token");
     router.push("/");
   };
@@ -55,11 +55,12 @@ export default function ChartsPage() {
   const [loading, setLoading] = useState(true);
 
   const COLORS = [
-    "#4f46e5",
-    "#f43f5e",
-    "#04ff5c",
-    "#f59e0b",
-    "#00fff7",
+    "#ff0000",
+    "#eaff00",
+    "#2600ff",
+    "#00ff2f",
+    "#ff02f2",
+    "#ffbf00",
   ];
 
   // --------------------------------------------------
@@ -432,8 +433,8 @@ export default function ChartsPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+      <div className="flex h-screen items-center justify-center bg-emerald-50 dark:bg-zinc-950">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
       </div>
     );
   }
@@ -443,541 +444,206 @@ export default function ChartsPage() {
   // --------------------------------------------------
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 pb-12 transition-colors">
-      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
+    <main className="min-h-screen bg-emerald-50 dark:bg-zinc-950 font-sans text-emerald-950 dark:text-emerald-50 pb-12 transition-colors">
+
+      {/* TOP NAVBAR */}
+      <header className="bg-white dark:bg-emerald-950 border-b border-emerald-200 dark:border-emerald-900 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
           <div className="flex items-center gap-3">
-            <div className="bg-indigo-600 p-2 rounded-lg"><Wallet className="w-6 h-6 text-white" /></div>
-            <h1 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">Monetra</h1>
+            <div className="bg-emerald-600 p-2 rounded-lg shadow-lg shadow-emerald-500/20">
+              <Wallet className="w-6 h-6 text-white" />
+            </div>
+
+            <h1 className="text-xl font-bold text-emerald-900 dark:text-white tracking-tight">
+              Monetra
+            </h1>
           </div>
+
           <div className="flex items-center gap-4">
+
             <ThemeToggle />
+
             <Link href="/dashboard/">
-              <button className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-xl hover:shadow-md transition-all text-sm">
-                <ArrowLeft className="w-4 h-4" />
+              <button className="flex items-center gap-2 bg-white dark:bg-emerald-900 border border-emerald-200 dark:border-emerald-800 px-4 py-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-800 hover:shadow-md transition-all text-sm">
+                <ArrowLeft className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <span>Back to Dashboard</span>
               </button>
             </Link>
-            <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-rose-600 transition-all text-sm font-medium">
-              <LogOut className="w-4 h-4" /> Logout
+
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900 hover:text-rose-600 transition-all text-sm font-medium"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
             </button>
+
           </div>
         </div>
       </header>
-      
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8">
 
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="min-h-screen bg-emerald-50 dark:bg-zinc-950 p-4 md:p-8">
 
-        {/* HEADER */}
-        <div className="flex items-center gap-4">
+        <div className="max-w-6xl mx-auto space-y-8">
 
-          <Link
-            href="/dashboard"
-            className="p-2 hover:bg-white dark:hover:bg-slate-800 rounded-xl shadow-sm transition-all border border-transparent dark:border-slate-800"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
+          {/* HEADER */}
+          <div className="flex items-center gap-4">
 
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
-              Financial Analytics
-            </h1>
+            <Link
+              href="/dashboard"
+              className="p-2 hover:bg-white dark:hover:bg-emerald-900 rounded-xl shadow-sm transition-all border border-transparent dark:border-emerald-900"
+            >
+              <ArrowLeft className="w-5 h-5 text-emerald-700 dark:text-emerald-300" />
+            </Link>
 
-            <p className="text-sm text-slate-500 mt-1">
-              Understand your financial activity and spending patterns
-            </p>
+            <div>
+              <h1 className="text-2xl font-bold text-emerald-950 dark:text-white">
+                Financial Analytics
+              </h1>
+
+              <p className="text-sm text-emerald-700 dark:text-emerald-300 mt-1">
+                Understand your financial activity and spending patterns
+              </p>
+            </div>
+
           </div>
 
-        </div>
+          {/* SUMMARY CARDS */}
 
-        {/* ================================================= */}
-        {/* SUMMARY CARDS */}
-        {/* ================================================= */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+            {/* Income */}
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-emerald-200 dark:border-emerald-900 shadow-sm">
 
-          {/* Income */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="flex items-center justify-between">
 
-            <div className="flex items-center justify-between">
+                <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                  Total Income
+                </p>
 
-              <p className="text-sm text-slate-500">
-                Total Income
-              </p>
+                <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900">
+                  <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
 
-              <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-950">
-                <TrendingUp className="w-5 h-5 text-indigo-600" />
               </div>
+
+              <h2 className="text-2xl font-bold mt-3 text-emerald-950 dark:text-white">
+                {formatCurrency(totalIncome)}
+              </h2>
 
             </div>
 
-            <h2 className="text-2xl font-bold mt-3 text-slate-800 dark:text-white">
-              {formatCurrency(totalIncome)}
-            </h2>
+            {/* Expenses */}
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-rose-200 dark:border-rose-900 shadow-sm">
 
-          </div>
+              <div className="flex items-center justify-between">
 
-          {/* Expenses */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <p className="text-sm text-rose-700 dark:text-rose-300">
+                  Total Expenses
+                </p>
 
-            <div className="flex items-center justify-between">
+                <div className="p-2 rounded-lg bg-rose-50 dark:bg-rose-950">
+                  <TrendingDown className="w-5 h-5 text-rose-500" />
+                </div>
 
-              <p className="text-sm text-slate-500">
-                Total Expenses
-              </p>
-
-              <div className="p-2 rounded-lg bg-rose-50 dark:bg-rose-950">
-                <TrendingDown className="w-5 h-5 text-rose-500" />
               </div>
+
+              <h2 className="text-2xl font-bold mt-3 text-emerald-950 dark:text-white">
+                {formatCurrency(totalExpense)}
+              </h2>
 
             </div>
 
-            <h2 className="text-2xl font-bold mt-3 text-slate-800 dark:text-white">
-              {formatCurrency(totalExpense)}
-            </h2>
+            {/* Balance */}
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-emerald-200 dark:border-zinc-900 shadow-sm">
 
-          </div>
+              <div className="flex items-center justify-between">
 
-          {/* Balance */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <p className="text-sm text-zinc-700 dark:text-zinc-300">
+                  Net Balance
+                </p>
 
-            <div className="flex items-center justify-between">
+                <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900">
+                  <Wallet className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
 
-              <p className="text-sm text-slate-500">
-                Net Balance
-              </p>
-
-              <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950">
-                <Wallet className="w-5 h-5 text-emerald-500" />
               </div>
+
+              <h2 className="text-2xl font-bold mt-3 text-emerald-950 dark:text-white">
+                {formatCurrency(netBalance)}
+              </h2>
 
             </div>
 
-            <h2 className="text-2xl font-bold mt-3 text-slate-800 dark:text-white">
-              {formatCurrency(netBalance)}
-            </h2>
+            {/* Savings */}
+            <div className="bg-white dark:bg-emerald-950 p-6 rounded-2xl border border-emerald-200 dark:border-emerald-900 shadow-sm">
 
-          </div>
+              <div className="flex items-center justify-between">
 
-          {/* Savings */}
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                  Savings Rate
+                </p>
 
-            <div className="flex items-center justify-between">
+                <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900">
+                  <Receipt className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
 
-              <p className="text-sm text-slate-500">
-                Savings Rate
-              </p>
-
-              <div className="p-2 rounded-lg bg-cyan-50 dark:bg-cyan-950">
-                <Receipt className="w-5 h-5 text-cyan-500" />
               </div>
+
+              <h2 className="text-2xl font-bold mt-3 text-emerald-950 dark:text-white">
+                {savingsRate.toFixed(1)}%
+              </h2>
 
             </div>
 
-            <h2 className="text-2xl font-bold mt-3 text-slate-800 dark:text-white">
-              {savingsRate.toFixed(1)}%
-            </h2>
-
           </div>
 
-        </div>
+          {/* LAST 7 DAYS */}
 
-        {/* ================================================= */}
-        {/* LAST 7 DAYS */}
-        {/* ================================================= */}
+          <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
 
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-
-          <h3 className="text-lg font-semibold mb-2 text-slate-700 dark:text-slate-200">
-            Last 7 Days
-          </h3>
-
-          <p className="text-sm text-slate-500 mb-6">
-            Daily income and expense activity
-          </p>
-
-          <div className="h-[350px]">
-
-            <ResponsiveContainer width="100%" height="100%">
-
-              <BarChart data={weeklyFlowData}>
-
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke="#e2e8f0"
-                />
-
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                />
-
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                />
-
-                <Tooltip />
-
-                <Legend />
-
-                <Bar
-                  dataKey="income"
-                  fill="#4f46e5"
-                  name="Income"
-                  radius={[4, 4, 0, 0]}
-                />
-
-                <Bar
-                  dataKey="expense"
-                  fill="#f43f5e"
-                  name="Expenses"
-                  radius={[4, 4, 0, 0]}
-                />
-
-              </BarChart>
-
-            </ResponsiveContainer>
-
-          </div>
-
-        </div>
-
-        {/* ================================================= */}
-        {/* MONTHLY */}
-        {/* ================================================= */}
-
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-
-          <h3 className="text-lg font-semibold mb-2 text-slate-700 dark:text-slate-200">
-            Monthly Income vs Expenses
-          </h3>
-
-          <p className="text-sm text-slate-500 mb-6">
-            Compare your income and spending over time
-          </p>
-
-          <div className="h-[350px]">
-
-            <ResponsiveContainer width="100%" height="100%">
-
-              <BarChart data={monthlyData}>
-
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                />
-
-                <XAxis dataKey="name" />
-
-                <YAxis />
-
-                <Tooltip />
-
-                <Legend />
-
-                <Bar
-                  dataKey="income"
-                  fill="#4f46e5"
-                  name="Income"
-                  radius={[4, 4, 0, 0]}
-                />
-
-                <Bar
-                  dataKey="expense"
-                  fill="#f43f5e"
-                  name="Expenses"
-                  radius={[4, 4, 0, 0]}
-                />
-
-              </BarChart>
-
-            </ResponsiveContainer>
-
-          </div>
-
-        </div>
-
-        {/* ================================================= */}
-        {/* CATEGORY + TOP EXPENSES */}
-        {/* ================================================= */}
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-          {/* Categories */}
-
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-
-            <h3 className="text-lg font-semibold mb-2 text-slate-700 dark:text-slate-200">
-              Spending by Category
+            <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
+              Last 7 Days
             </h3>
 
-            <p className="text-sm text-slate-500 mb-4">
-              Where your money is going
+            <p className="text-sm text-emerald-700 dark:text-emerald-300 mb-6">
+              Daily income and expense activity
             </p>
 
             <div className="h-[350px]">
 
               <ResponsiveContainer width="100%" height="100%">
 
-                <PieChart>
+                <BarChart data={weeklyFlowData}>
 
-                  <Pie
-                    data={categoryData}
-                    innerRadius={70}
-                    outerRadius={110}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="#d1fae5"
+                  />
 
-                    {categoryData.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                        stroke="none"
-                      />
-                    ))}
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                  />
 
-                  </Pie>
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                  />
 
                   <Tooltip />
 
                   <Legend />
 
-                </PieChart>
-
-              </ResponsiveContainer>
-
-            </div>
-
-          </div>
-
-          {/* Top Expenses */}
-
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-
-            <h3 className="text-lg font-semibold mb-2 text-slate-700 dark:text-slate-200">
-              Top 5 Expenses
-            </h3>
-
-            <p className="text-sm text-slate-500 mb-6">
-              Your largest individual expenses
-            </p>
-
-            <div className="space-y-5">
-
-              {topExpenses.length === 0 ? (
-
-                <p className="text-slate-500 text-sm">
-                  No expenses recorded yet.
-                </p>
-
-              ) : (
-
-                topExpenses.map((transaction, index) => (
-
-                  <div
-                    key={transaction.id ?? index}
-                    className="flex items-center justify-between"
-                  >
-
-                    <div className="flex items-center gap-4">
-
-                      <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-sm font-semibold">
-                        {index + 1}
-                      </div>
-
-                      <div>
-
-                        <p className="font-medium text-slate-800 dark:text-white">
-                          {transaction.description ||
-                            transaction.text ||
-                            "Expense"}
-                        </p>
-
-                        <p className="text-sm text-slate-500">
-                          {transaction.category}
-                        </p>
-
-                      </div>
-
-                    </div>
-
-                    <p className="font-semibold text-rose-500">
-                      {formatCurrency(Number(transaction.amount))}
-                    </p>
-
-                  </div>
-
-                ))
-
-              )}
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* ================================================= */}
-        {/* NET BALANCE */}
-        {/* ================================================= */}
-
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-
-          <h3 className="text-lg font-semibold mb-2 text-slate-700 dark:text-slate-200">
-            Net Balance Trajectory
-          </h3>
-
-          <p className="text-sm text-slate-500 mb-6">
-            How your balance has changed across transactions
-          </p>
-
-          <div className="h-[300px]">
-
-            <ResponsiveContainer width="100%" height="100%">
-
-              <AreaChart data={cumulativeData}>
-
-                <defs>
-
-                  <linearGradient
-                    id="colorBalance"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-
-                    <stop
-                      offset="5%"
-                      stopColor="#4f46e5"
-                      stopOpacity={0.3}
-                    />
-
-                    <stop
-                      offset="95%"
-                      stopColor="#4f46e5"
-                      stopOpacity={0}
-                    />
-
-                  </linearGradient>
-
-                </defs>
-
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                />
-
-                <XAxis dataKey="date" />
-
-                <YAxis />
-
-                <Tooltip />
-
-                <Area
-                  type="monotone"
-                  dataKey="balance"
-                  stroke="#4f46e5"
-                  strokeWidth={3}
-                  fillOpacity={1}
-                  fill="url(#colorBalance)"
-                />
-
-              </AreaChart>
-
-            </ResponsiveContainer>
-
-          </div>
-
-        </div>
-
-        {/* ================================================= */}
-        {/* 30 DAY TREND */}
-        {/* ================================================= */}
-
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-
-          <h3 className="text-lg font-semibold mb-2 text-slate-700 dark:text-slate-200">
-            30-Day Spending Trend
-          </h3>
-
-          <p className="text-sm text-slate-500 mb-6">
-            Daily spending activity during the last 30 days
-          </p>
-
-          <div className="h-[300px]">
-
-            <ResponsiveContainer width="100%" height="100%">
-
-              <LineChart data={spendingTrendData}>
-
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                />
-
-                <XAxis dataKey="name" />
-
-                <YAxis />
-
-                <Tooltip />
-
-                <Line
-                  type="monotone"
-                  dataKey="expense"
-                  stroke="#f43f5e"
-                  strokeWidth={3}
-                  dot={false}
-                  name="Expenses"
-                />
-
-              </LineChart>
-
-            </ResponsiveContainer>
-
-          </div>
-
-        </div>
-
-        {/* ================================================= */}
-        {/* WEEKDAY + STATISTICS */}
-        {/* ================================================= */}
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-          {/* Weekday */}
-
-          <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-
-            <h3 className="text-lg font-semibold mb-2 text-slate-700 dark:text-slate-200">
-              Spending by Day of Week
-            </h3>
-
-            <p className="text-sm text-slate-500 mb-6">
-              Which days tend to have the highest spending
-            </p>
-
-            <div className="h-[300px]">
-
-              <ResponsiveContainer width="100%" height="100%">
-
-                <BarChart data={weekdayData}>
-
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    vertical={false}
+                  <Bar
+                    dataKey="income"
+                    fill="#059669"
+                    name="Income"
+                    radius={[4, 4, 0, 0]}
                   />
-
-                  <XAxis dataKey="name" />
-
-                  <YAxis />
-
-                  <Tooltip />
 
                   <Bar
                     dataKey="expense"
@@ -994,49 +660,171 @@ export default function ChartsPage() {
 
           </div>
 
-          {/* Statistics */}
+          {/* MONTHLY */}
 
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
 
-            <h3 className="text-lg font-semibold mb-6 text-slate-700 dark:text-slate-200">
-              Transaction Statistics
+            <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
+              Monthly Income vs Expenses
             </h3>
 
-            <div className="space-y-6">
+            <p className="text-sm text-emerald-700 dark:text-emerald-300 mb-6">
+              Compare your income and spending over time
+            </p>
 
-              <div>
+            <div className="h-[350px]">
 
-                <p className="text-sm text-slate-500">
-                  Total Transactions
-                </p>
+              <ResponsiveContainer width="100%" height="100%">
 
-                <p className="text-2xl font-bold mt-1">
-                  {transactionCount}
-                </p>
+                <BarChart data={monthlyData}>
+
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                  />
+
+                  <XAxis dataKey="name" />
+
+                  <YAxis />
+
+                  <Tooltip />
+
+                  <Legend />
+
+                  <Bar
+                    dataKey="income"
+                    fill="#059669"
+                    name="Income"
+                    radius={[4, 4, 0, 0]}
+                  />
+
+                  <Bar
+                    dataKey="expense"
+                    fill="#f43f5e"
+                    name="Expenses"
+                    radius={[4, 4, 0, 0]}
+                  />
+
+                </BarChart>
+
+              </ResponsiveContainer>
+
+            </div>
+
+          </div>
+
+          {/* CATEGORY + TOP EXPENSES */}
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            {/* Categories */}
+
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
+
+              <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
+                Spending by Category
+              </h3>
+
+              <p className="text-sm text-emerald-700 dark:text-emerald-300 mb-4">
+                Where your money is going
+              </p>
+
+              <div className="h-[350px]">
+
+                <ResponsiveContainer width="100%" height="100%">
+
+                  <PieChart>
+
+                    <Pie
+                      data={categoryData}
+                      innerRadius={70}
+                      outerRadius={110}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+
+                      {categoryData.map((_, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                          stroke="none"
+                        />
+                      ))}
+
+                    </Pie>
+
+                    <Tooltip />
+
+                    <Legend />
+
+                  </PieChart>
+
+                </ResponsiveContainer>
 
               </div>
 
-              <div>
+            </div>
 
-                <p className="text-sm text-slate-500">
-                  Average Expense
-                </p>
+            {/* Top Expenses */}
 
-                <p className="text-2xl font-bold mt-1">
-                  {formatCurrency(averageExpense)}
-                </p>
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
 
-              </div>
+              <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
+                Top 5 Expenses
+              </h3>
 
-              <div>
+              <p className="text-sm text-emerald-700 dark:text-emerald-300 mb-6">
+                Your largest individual expenses
+              </p>
 
-                <p className="text-sm text-slate-500">
-                  Largest Expense
-                </p>
+              <div className="space-y-5">
 
-                <p className="text-2xl font-bold mt-1 text-rose-500">
-                  {formatCurrency(Number(largestExpense))}
-                </p>
+                {topExpenses.length === 0 ? (
+
+                  <p className="text-emerald-700 dark:text-emerald-300 text-sm">
+                    No expenses recorded yet.
+                  </p>
+
+                ) : (
+
+                  topExpenses.map((transaction, index) => (
+
+                    <div
+                      key={transaction.id ?? index}
+                      className="flex items-center justify-between"
+                    >
+
+                      <div className="flex items-center gap-4">
+
+                        <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-sm font-semibold text-emerald-800 dark:text-emerald-200">
+                          {index + 1}
+                        </div>
+
+                        <div>
+
+                          <p className="font-medium text-emerald-950 dark:text-white">
+                            {transaction.description ||
+                              transaction.text ||
+                              "Expense"}
+                          </p>
+
+                          <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                            {transaction.category}
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                      <p className="font-semibold text-rose-500">
+                        {formatCurrency(Number(transaction.amount))}
+                      </p>
+
+                    </div>
+
+                  ))
+
+                )}
 
               </div>
 
@@ -1044,34 +832,250 @@ export default function ChartsPage() {
 
           </div>
 
-        </div>
+          {/* NET BALANCE */}
 
-        {/* ================================================= */}
-        {/* FINANCIAL INSIGHTS */}
-        {/* ================================================= */}
+          <div className="bg-white dark:bg-emerald-950 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
 
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
+              Net Balance Trajectory
+            </h3>
 
-          <h3 className="text-lg font-semibold mb-2 text-slate-700 dark:text-slate-200">
-            Financial Insights
-          </h3>
+            <p className="text-sm text-emerald-700 dark:text-emerald-300 mb-6">
+              How your balance has changed across transactions
+            </p>
 
-          <p className="text-sm text-slate-500 mb-6">
-            Automatically generated observations from your transaction data
-          </p>
+            <div className="h-[300px]">
 
-          <div className="space-y-3">
+              <ResponsiveContainer width="100%" height="100%">
 
-            {financialInsights.map((insight, index) => (
+                <AreaChart data={cumulativeData}>
 
-              <div
-                key={index}
-                className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
-              >
-                {insight}
+                  <defs>
+
+                    <linearGradient
+                      id="colorBalance"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+
+                      <stop
+                        offset="5%"
+                        stopColor="#059669"
+                        stopOpacity={0.3}
+                      />
+
+                      <stop
+                        offset="95%"
+                        stopColor="#059669"
+                        stopOpacity={0}
+                      />
+
+                    </linearGradient>
+
+                  </defs>
+
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                  />
+
+                  <XAxis dataKey="date" />
+
+                  <YAxis />
+
+                  <Tooltip />
+
+                  <Area
+                    type="monotone"
+                    dataKey="balance"
+                    stroke="#059669"
+                    strokeWidth={3}
+                    fillOpacity={1}
+                    fill="url(#colorBalance)"
+                  />
+
+                </AreaChart>
+
+              </ResponsiveContainer>
+
+            </div>
+
+          </div>
+
+          {/* 30 DAY TREND */}
+
+          <div className="bg-white dark:bg-red-950 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
+
+            <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
+              30-Day Spending Trend
+            </h3>
+
+            <p className="text-sm text-emerald-700 dark:text-emerald-300 mb-6">
+              Daily spending activity during the last 30 days
+            </p>
+
+            <div className="h-[300px]">
+
+              <ResponsiveContainer width="100%" height="100%">
+
+                <LineChart data={spendingTrendData}>
+
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                  />
+
+                  <XAxis dataKey="name" />
+
+                  <YAxis />
+
+                  <Tooltip />
+
+                  <Line
+                    type="monotone"
+                    dataKey="expense"
+                    stroke="#f43f5e"
+                    strokeWidth={3}
+                    dot={false}
+                    name="Expenses"
+                  />
+
+                </LineChart>
+
+              </ResponsiveContainer>
+
+            </div>
+
+          </div>
+
+          {/* WEEKDAY + STATISTICS */}
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            {/* Weekday */}
+
+            <div className="lg:col-span-2 bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
+
+              <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
+                Spending by Day of Week
+              </h3>
+
+              <p className="text-sm text-emerald-700 dark:text-emerald-300 mb-6">
+                Which days tend to have the highest spending
+              </p>
+
+              <div className="h-[300px]">
+
+                <ResponsiveContainer width="100%" height="100%">
+
+                  <BarChart data={weekdayData}>
+
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                    />
+
+                    <XAxis dataKey="name" />
+
+                    <YAxis />
+
+                    <Tooltip />
+
+                    <Bar
+                      dataKey="expense"
+                      fill="#f43f5e"
+                      name="Expenses"
+                      radius={[4, 4, 0, 0]}
+                    />
+
+                  </BarChart>
+
+                </ResponsiveContainer>
+
               </div>
 
-            ))}
+            </div>
+
+            {/* Statistics */}
+
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
+
+              <h3 className="text-lg font-semibold mb-6 text-emerald-900 dark:text-emerald-100">
+                Transaction Statistics
+              </h3>
+
+              <div className="space-y-6">
+
+                <div>
+
+                  <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                    Total Transactions
+                  </p>
+
+                  <p className="text-2xl font-bold mt-1 text-emerald-950 dark:text-white">
+                    {transactionCount}
+                  </p>
+
+                </div>
+
+                <div>
+
+                  <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                    Average Expense
+                  </p>
+
+                  <p className="text-2xl font-bold mt-1 text-emerald-950 dark:text-white">
+                    {formatCurrency(averageExpense)}
+                  </p>
+
+                </div>
+
+                <div>
+
+                  <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                    Largest Expense
+                  </p>
+
+                  <p className="text-2xl font-bold mt-1 text-rose-500">
+                    {formatCurrency(Number(largestExpense))}
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* FINANCIAL INSIGHTS */}
+
+          <div className="bg-white dark:bg-emerald-950 p-6 rounded-2xl border border-emerald-200 dark:border-emerald-900 shadow-sm">
+
+            <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
+              Financial Insights
+            </h3>
+
+            <p className="text-sm text-emerald-700 dark:text-emerald-300 mb-6">
+              Automatically generated observations from your transaction data
+            </p>
+
+            <div className="space-y-3">
+
+              {financialInsights.map((insight, index) => (
+
+                <div
+                  key={index}
+                  className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-100 border border-emerald-100 dark:border-emerald-800"
+                >
+                  {insight}
+                </div>
+
+              ))}
+
+            </div>
 
           </div>
 
@@ -1079,7 +1083,6 @@ export default function ChartsPage() {
 
       </div>
 
-    </div>
     </main>
   );
 }

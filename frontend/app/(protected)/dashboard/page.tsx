@@ -14,16 +14,27 @@ import { Wallet, LogOut, Loader2 } from "lucide-react";
 import { ThemeToggle } from "../../../components/ThemeToggle";
 import Link from "next/link";
 import { BarChart3 } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
 
 export default function Home() {
   const router = useRouter();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [recurringTransactions, setRecurringTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userName, setUserName] = useState("there");
 
   useEffect(() => {
     const loadData = async () => {
       const token = localStorage.getItem("token");
+
+      if (token) {
+        try {
+          const decoded: any = jwtDecode(token);
+          setUserName(decoded.user_metadata?.full_name || "there");
+        } catch (error) {
+          console.error("Failed to decode token:", error);
+        }
+      }
 
       try {
         // Load normal transactions
@@ -250,8 +261,8 @@ export default function Home() {
   );
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 pb-12 transition-colors">
-      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
+    <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950 font-sans text-slate-900 dark:text-slate-100 pb-12 transition-colors">
+      <header className="bg-white dark:bg-emerald-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-indigo-600 p-2 rounded-lg"><Wallet className="w-6 h-6 text-white" /></div>
@@ -260,8 +271,8 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <ThemeToggle />
             <Link href="/dashboard/charts">
-              <button className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-xl hover:shadow-md transition-all text-sm">
-                <BarChart3 className="w-5 h-5 text-indigo-600" />
+              <button className="flex items-center gap-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-xl hover:shadow-md transition-all text-sm">
+                <BarChart3 className="w-5 h-5 text-emerald-600" />
                 <span>View Analytics</span>
               </button>
             </Link>
@@ -272,6 +283,17 @@ export default function Home() {
         </div>
       </header>
 
+      <div className="max-w-7xl mx-auto px-6 mt-8">
+        <div className="py-8">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Hey {userName}!
+          </h1>
+
+          <p className="mt-3 text-lg text-slate-500 dark:text-slate-400">
+            Get started by tracking your finances and taking control of your money.
+          </p>
+        </div>
+      </div>
       {/* Main Content Layout with Sidebar */}
       {/* <div className="max-w-7xl mx-auto px-6 mt-8 flex flex-col lg:flex-row gap-8"> */}
       <div className="max-w-7xl mx-auto px-6 mt-8">
@@ -287,8 +309,8 @@ export default function Home() {
         <div className="flex-1 space-y-8">
           <SummaryCards balance={totalBalance} income={income} expense={expense} />
           <div className="grid xl:grid-cols-3 gap-8 items-start">
-            <div className="xl:col-span-1"><TransactionForm onAdd={handleAdd} /></div>
-            <div className="xl:col-span-2"><TransactionList transactions={transactions} onDelete={handleDelete} /></div>
+            <div className="xl:col-span-2"><TransactionForm onAdd={handleAdd} /></div>
+            <div className="xl:col-span-1"><TransactionList transactions={transactions} onDelete={handleDelete} /></div>
           </div>
           <RecurringTransactionList
             transactions={recurringTransactions}
