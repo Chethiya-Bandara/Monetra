@@ -223,6 +223,84 @@ async def get_recurring_transactions(
             detail="Unable to load recurring transactions."
         )
 
+@app.put("/recurring-transactions/{id}")
+async def update_recurring_transaction(
+    id: str,
+    transaction: RecurringTransactionBase,
+    user_id: str = Depends(get_current_user)
+):
+    data = {
+        "amount": transaction.amount,
+        "type": transaction.type,
+        "frequency": transaction.frequency,
+        "category": transaction.category,
+        "description": transaction.description,
+        "start_date": transaction.start_date,
+        "end_date": transaction.end_date
+    }
+
+    try:
+        response = (
+            supabase
+            .table("recurring_transactions")
+            .update(data)
+            .eq("id", id)
+            .eq("user_id", user_id)
+            .execute()
+        )
+
+        if not response.data:
+            raise HTTPException(
+                status_code=404,
+                detail="Recurring transaction not found."
+            )
+
+        return response.data[0]
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        print(f"Update recurring transaction error: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail="Unable to update recurring transaction."
+        )
+
+
+@app.delete("/recurring-transactions/{id}")
+async def delete_recurring_transaction(
+    id: str,
+    user_id: str = Depends(get_current_user)
+):
+    try:
+        response = (
+            supabase
+            .table("recurring_transactions")
+            .delete()
+            .eq("id", id)
+            .eq("user_id", user_id)
+            .execute()
+        )
+
+        if not response.data:
+            raise HTTPException(
+                status_code=404,
+                detail="Recurring transaction not found."
+            )
+
+        return {"status": "success"}
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        print(f"Delete recurring transaction error: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail="Unable to delete recurring transaction."
+        )
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

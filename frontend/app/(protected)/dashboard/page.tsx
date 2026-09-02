@@ -292,6 +292,20 @@ export default function Home() {
           </div>
           <RecurringTransactionList
             transactions={recurringTransactions}
+            onUpdate={(updatedTransaction) => {
+              setRecurringTransactions((prev) =>
+                prev.map((transaction) =>
+                  transaction.id === updatedTransaction.id
+                    ? updatedTransaction
+                    : transaction
+                )
+              );
+            }}
+            onDelete={(id) => {
+              setRecurringTransactions((prev) =>
+                prev.filter((transaction) => transaction.id !== id)
+              );
+            }}
           />
           <FinancialInsights />
         </div>
