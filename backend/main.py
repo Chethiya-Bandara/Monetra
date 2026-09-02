@@ -114,57 +114,72 @@ except Exception as e:
 class ChatRequest(BaseModel):
     message: str
 
+
 @app.post("/chat")
-async def chat_with_ai(request: ChatRequest, user_id: str = Depends(get_current_user)):
-    # 1. Fetch user data
-    response = supabase.table("transactions").select("*").eq("user_id", user_id).execute()
-    transactions = response.data
-
-    # 2. Guard rail: Check if data exists
-    if not transactions:
-        return {"reply": "I don't see any transactions in your account yet. Add some expenses or income so I can analyze your finances!"}
-
-    # 3. Clean the data (Removes sensitive/redundant fields to save tokens)
-    # We only keep what's relevant for financial logic
-    essential_data = [
-        {
-            "amount": t["amount"],
-            "category": t["category"],
-            "type": t["type"],
-            "description": t["description"],
-            "date": t["date"]
-        } for t in transactions
-    ]
-
-    # 4. Refined System Context
-    system_context = (
-        "You are Monetra AI, a professional financial assistant. "
-        "Analyze the user's spending patterns based on the JSON data provided below. "
-        "Focus on identifying trends, highlighting overspending in specific categories, "
-        "and suggesting ways to save. Be encouraging but direct. "
-    )
-
-    # Change the prompt to ask for JSON
-    full_prompt = (
-        f"{system_context}\n"
-        "Respond in JSON format: { 'reply': '...', 'health_score': 0-100, 'alert_category': '...' }\n"
-        f"Data: {essential_data}\nQuestion: {request.message}"
-    )
-
-    # And use the generation config
-    ai_response = model.generate_content(
-        full_prompt, 
-        generation_config={"response_mime_type": "application/json"}
-    )
-
-    # 5. Get response from Gemini
+async def chat_with_ai(
+    request: ChatRequest,
+    user_id: str = Depends(get_current_user)
+):
     try:
-        full_prompt = f"{system_context}\n\nUser Transactions: {essential_data}\n\nUser Question: {request.message}"
+        # 1. Fetch user's transactions
+        response = (
+            supabase
+            .table("transactions")
+            .select("*")
+            .eq("user_id", user_id)
+            .execute()
+        )
+
+        transactions = response.data
+
+        # 2. Check if the user has transactions
+        if not transactions:
+            return {
+                "reply": "I don't see any transactions in your account yet. Add some expenses or income so I can analyze your finances!"
+            }
+
+        # 3. Keep only relevant transaction data
+        essential_data = [
+            {
+                "amount": t["amount"],
+                "category": t["category"],
+                "type": t["type"],
+                "description": t["description"],
+                "date": t["date"]
+            }
+            for t in transactions
+        ]
+
+        # 4. Build AI prompt
+        system_context = (
+            "You are Monetra AI, a professional financial assistant. "
+            "Analyze the user's spending patterns based on the transaction data. "
+            "Identify spending trends, highlight potentially high spending "
+            "categories, and suggest practical ways to manage money. "
+            "Be encouraging, clear, and concise. "
+            "Do not make assumptions about information that is not provided."
+        )
+
+        full_prompt = (
+            f"{system_context}\n\n"
+            f"User Transactions: {essential_data}\n\n"
+            f"User Question: {request.message}"
+        )
+
+        # 5. Ask Gemini
         ai_response = model.generate_content(full_prompt)
-        return {"reply": ai_response.text}
+
+        # 6. Return response
+        return {
+            "reply": ai_response.text
+        }
+
     except Exception as e:
-        print(f"Gemini Error: {e}")
-        raise HTTPException(status_code=500, detail="AI service is currently unavailable.")
+        print(f"CHAT ERROR: {repr(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
     
 @app.post("/recurring-transactions")
 async def create_recurring(transaction: RecurringTransactionBase, user_id: str = Depends(get_current_user)):
@@ -184,6 +199,29 @@ async def create_recurring(transaction: RecurringTransactionBase, user_id: str =
         return response.data[0]
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/recurring-transactions")
+async def get_recurring_transactions(
+    user_id: str = Depends(get_current_user)
+):
+    try:
+        response = (
+            supabase
+            .table("recurring_transactions")
+            .select("*")
+            .eq("user_id", user_id)
+            .order("start_date", desc=False)
+            .execute()
+        )
+
+        return response.data
+
+    except Exception as e:
+        print(f"Recurring transactions error: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to load recurring transactions."
+        )
 
 if __name__ == "__main__":
     import uvicorn
