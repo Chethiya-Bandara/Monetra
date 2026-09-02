@@ -112,7 +112,7 @@ export default function TransactionForm({ onAdd }: any) {
                 step="0.01" 
                 value={amount} 
                 onChange={e => setAmount(e.target.value)} 
-                placeholder="0.00" 
+                placeholder="0.00 (LKR)" 
                 className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-mono" 
                 required 
               />

@@ -20,7 +20,7 @@ export default function SummaryCards({ balance, income, expense }: SummaryCardsP
               Total Balance
             </p>
             <h3 className="text-3xl font-bold mt-2 tracking-tight">
-              ${format(balance)}
+              Rs.{format(balance)}
             </h3>
           </div>
           <div className="bg-white/20 p-3 rounded-xl backdrop-blur-md">
@@ -38,7 +38,7 @@ export default function SummaryCards({ balance, income, expense }: SummaryCardsP
             </p>
             <h3 className="text-2xl font-bold mt-2 text-slate-800 dark:text-slate-100">
               <span className="text-emerald-600 dark:text-emerald-500 mr-1">+</span>
-              ${format(income)}
+              Rs.{format(income)}
             </h3>
           </div>
           <div className="bg-emerald-50 dark:bg-emerald-500/10 p-3 rounded-xl">
@@ -56,7 +56,7 @@ export default function SummaryCards({ balance, income, expense }: SummaryCardsP
             </p>
             <h3 className="text-2xl font-bold mt-2 text-slate-800 dark:text-slate-100">
               <span className="text-rose-600 dark:text-rose-500 mr-1">-</span>
-              ${format(expense)}
+              Rs.{format(expense)}
             </h3>
           </div>
           <div className="bg-rose-50 dark:bg-rose-500/10 p-3 rounded-xl">

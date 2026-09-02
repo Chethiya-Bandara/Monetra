@@ -8,20 +8,38 @@ export default function FinancialInsights() {
 
   const fetchInsight = async () => {
     setLoading(true);
+
     const token = localStorage.getItem("token");
+
     try {
-      const res = await fetch("http://localhost:8000/chat", {
+      const res = await fetch("http://127.0.0.1:8000/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ message: "Give me a quick 3-bullet point summary of my recent spending and one suggestion. Also a section saying 'you've spent x% more on a category than last week' type stat." })
+        body: JSON.stringify({
+          message:
+            "Give me a quick 3-bullet point summary of my recent spending and one suggestion. Also a section saying 'you've spent x% more on a category than last week' type stat.",
+        }),
       });
+
+      // Handle HTTP errors such as 500
+      if (!res.ok) {
+        throw new Error(`AI API returned ${res.status}`);
+      }
+
       const data = await res.json();
-      setInsight(data.reply);
+
+      setInsight(
+        data.reply || "Insights unavailable at the moment. Please try again later."
+      );
     } catch (err) {
-      setInsight("Unable to load insights at this time.");
+      console.error("Financial insights failed:", err);
+
+      setInsight(
+        "Insights unavailable at the moment. Please try again later."
+      );
     } finally {
       setLoading(false);
     }
@@ -36,11 +54,11 @@ export default function FinancialInsights() {
           <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           <h3 className="font-bold text-slate-800 dark:text-white">Monetra AI Insights</h3>
         </div>
-        <button onClick={fetchInsight} className="text-xs text-indigo-600 hover:underline">Refresh</button>
+        <button onClick={fetchInsight} className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">Refresh</button>
       </div>
 
       {loading ? (
-        <div className="flex items-center gap-2 text-slate-500 text-sm py-4">
+        <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm py-4">
           <Loader2 className="w-4 h-4 animate-spin" /> Analyzing your patterns...
         </div>
       ) : (

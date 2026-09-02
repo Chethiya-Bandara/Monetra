@@ -44,9 +44,9 @@ export default function TransactionList({ transactions, onDelete }: any) {
 
               <div className="flex items-center gap-4">
                 <span className={`font-bold text-lg ${
-                  t.type === 'income' ? 'text-emerald-600 dark:text-emerald-500' : 'text-slate-700 dark:text-slate-300'
+                  t.type === 'income' ? 'text-emerald-600 dark:text-emerald-500' : 'text-red-500 dark:text-red-500'
                 }`}>
-                  {t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)}
+                  {t.type === 'income' ? '+' : '-'}Rs.{t.amount.toFixed(2)}
                 </span>
                 <button 
                   onClick={() => onDelete(t.id)} 

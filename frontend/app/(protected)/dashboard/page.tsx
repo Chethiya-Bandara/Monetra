@@ -1,5 +1,6 @@
 "use client";
 
+import RecurringTransactionList from "../../../components/RecurringTransactionList";
 import ChatBotPopup from "../../../components/ChatBotPopup";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -17,60 +18,204 @@ import { BarChart3 } from "lucide-react";
 export default function Home() {
   const router = useRouter();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [recurringTransactions, setRecurringTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       const token = localStorage.getItem("token");
+
       try {
-        const res = await fetch("http://localhost:8000/transactions", {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-        if (res.ok) {
-          const data = await res.json();
+        // Load normal transactions
+        const transactionRes = await fetch(
+          "http://localhost:8000/transactions",
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`
+            }
+          }
+        );
+
+        if (transactionRes.ok) {
+          const data = await transactionRes.json();
           setTransactions(data);
         }
+
+
+        // Load recurring transactions
+        const recurringRes = await fetch(
+          "http://localhost:8000/recurring-transactions",
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`
+            }
+          }
+        );
+
+        if (recurringRes.ok) {
+          const recurringData = await recurringRes.json();
+          setRecurringTransactions(recurringData);
+        }
+
       } catch (err) {
         console.error("Failed to fetch:", err);
+
       } finally {
         setLoading(false);
       }
     };
+
     loadData();
   }, []);
 
   const handleAdd = async (formData: any) => {
     const token = localStorage.getItem("token");
-    
-    const payload = {
-      text: formData.text,
-      amount: Number(formData.amount),
-      type: formData.type.toLowerCase(),
-      date: formData.date || new Date().toISOString(),
-      category: formData.category
-    };
+
+    if (!token) {
+      console.error("No authentication token found");
+      return;
+    }
 
     try {
-      const res = await fetch("http://localhost:8000/transactions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
+      // ==========================================
+      // RECURRING TRANSACTION
+      // ==========================================
+      if (formData.is_recurring) {
+
+        const recurringPayload = {
+          amount: Number(formData.amount),
+          type: formData.type.toLowerCase(),
+          frequency: formData.frequency,
+          category: formData.category,
+          description: formData.text,
+          start_date: formData.date || new Date().toISOString(),
+          end_date: formData.end_date || null,
+        };
+
+        const recurringRes = await fetch(
+          "http://localhost:8000/recurring-transactions",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify(recurringPayload),
+          }
+        );
+
+        if (!recurringRes.ok) {
+          const errorData = await recurringRes.json();
+
+          console.error(
+            "Recurring transaction error:",
+            errorData.detail
+          );
+
+          return;
+        }
+
+        const recurringTransaction = await recurringRes.json();
+
+        // Immediately add to recurring list
+        setRecurringTransactions((prev) => [
+          recurringTransaction,
+          ...prev,
+        ]);
+
+
+        // ==========================================
+        // CREATE CURRENT TRANSACTION
+        // ==========================================
+
+        const transactionPayload = {
+          text: formData.text,
+          amount: Number(formData.amount),
+          type: formData.type.toLowerCase(),
+          date: formData.date || new Date().toISOString(),
+          category: formData.category,
+        };
+
+        const transactionRes = await fetch(
+          "http://localhost:8000/transactions",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify(transactionPayload),
+          }
+        );
+
+        if (!transactionRes.ok) {
+          const errorData = await transactionRes.json();
+
+          console.error(
+            "Transaction creation error:",
+            errorData.detail
+          );
+
+          return;
+        }
+
+        const newTransaction = await transactionRes.json();
+
+        // Immediately add to transaction list
+        setTransactions((prev) => [
+          newTransaction,
+          ...prev,
+        ]);
+
+        return;
+      }
+
+
+      // ==========================================
+      // NORMAL ONE-TIME TRANSACTION
+      // ==========================================
+
+      const payload = {
+        text: formData.text,
+        amount: Number(formData.amount),
+        type: formData.type.toLowerCase(),
+        date: formData.date || new Date().toISOString(),
+        category: formData.category,
+      };
+
+      const res = await fetch(
+        "http://localhost:8000/transactions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!res.ok) {
         const errorData = await res.json();
-        console.error("Validation Error:", errorData.detail);
+
+        console.error(
+          "Transaction creation error:",
+          errorData.detail
+        );
+
         return;
       }
 
       const newTransaction = await res.json();
-      setTransactions(prev => [newTransaction, ...prev]);
-      
+
+      // Immediately add to transaction list
+      setTransactions((prev) => [
+        newTransaction,
+        ...prev,
+      ]);
+
     } catch (err) {
-      console.error("Network Error:", err);
+      console.error("Transaction creation error:", err);
     }
   };
 
@@ -131,7 +276,7 @@ export default function Home() {
       {/* <div className="max-w-7xl mx-auto px-6 mt-8 flex flex-col lg:flex-row gap-8"> */}
       <div className="max-w-7xl mx-auto px-6 mt-8">
         
-        {/* Left Sidebar: ChatBot */}
+        {/* Left Sidebar: ChatBot*/}
         {/*
         <aside className="lg:w-80 w-full shrink-0 sticky top-24 self-start">
           <ChatBot />
@@ -141,14 +286,37 @@ export default function Home() {
         {/* Right Content: Stats and Transactions */}
         <div className="flex-1 space-y-8">
           <SummaryCards balance={totalBalance} income={income} expense={expense} />
-          <FinancialInsights />
           <div className="grid xl:grid-cols-3 gap-8 items-start">
             <div className="xl:col-span-1"><TransactionForm onAdd={handleAdd} /></div>
             <div className="xl:col-span-2"><TransactionList transactions={transactions} onDelete={handleDelete} /></div>
           </div>
+          <RecurringTransactionList
+            transactions={recurringTransactions}
+          />
+          <FinancialInsights />
         </div>
       </div>
       <ChatBotPopup />
+      <footer className="mt-12 border-t border-slate-200 dark:border-slate-800 py-6">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <div className="flex justify-center gap-4 mb-2">
+            <Link
+              href="/privacy"
+              className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            >
+              Privacy Policy
+            </Link>
+          </div>
+
+          <p className="text-xs text-slate-400 dark:text-slate-500">
+            © 2026 Monetra · Personal Finance Manager
+          </p>
+
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+            Built with Next.js, FastAPI & Supabase
+          </p>
+        </div>
+      </footer>
     </main>
   );
 }
