@@ -5,9 +5,8 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from fastapi.middleware.cors import CORSMiddleware
 from database import supabase
-from schemas import TransactionCreate, Transaction, TransactionBase, RecurringTransactionBase
+from schemas import TransactionBase, RecurringTransactionBase
 from auth import get_current_user
-from typing import List, Literal
 from pydantic import BaseModel, Field
 from supabase import create_client, Client
 import google.generativeai as genai
@@ -58,24 +57,29 @@ async def create_transaction(request: Request, transaction: TransactionBase, use
         response = supabase.table("transactions").insert(transaction_data).execute()
         return response.data[0]
     except Exception as e:
-        print(f"DB ERROR: {e}")
-        raise HTTPException(status_code=400, detail=str(e))
+        print(f"DB ERROR: {repr(e)}")
+        raise HTTPException(status_code=500, detail="Unable to process your request.")
 
 @app.delete("/transactions/{id}")
-async def delete_transaction(id: str, user_id: str = Depends(get_current_user)):
+@limiter.limit("30/minute")
+async def delete_transaction(request: Request, id: str, user_id: str = Depends(get_current_user)):
     supabase.table("transactions").delete().eq("id", id).eq("user_id", user_id).execute()
     return {"status": "success"}
 
+class RegisterRequest(BaseModel):
+    email: str
+    password: str = Field(min_length=8, max_length=128)
+    fullName: str = Field(min_length=1, max_length=100)
+
 @app.post("/register")
 @limiter.limit("3/minute")
-async def register(request: Request, user_data: dict):
-    # Supabase Auth registration
+async def register(request: Request, user_data: RegisterRequest):
     response = supabase.auth.sign_up({
-        "email": user_data["email"],
-        "password": user_data["password"],
+        "email": user_data.email,
+        "password": user_data.password,
         "options": {
             "data": {
-                "full_name": user_data["fullName"]
+                "full_name": user_data.fullName
             }
         }
     })
@@ -91,7 +95,7 @@ async def register(request: Request, user_data: dict):
 
 class LoginRequest(BaseModel):
     email: str
-    password: str
+    password: str = Field(max_length=128)
 
 @app.post("/login")
 @limiter.limit("5/minute")
@@ -181,11 +185,12 @@ async def chat_with_ai(
         print(f"CHAT ERROR: {repr(e)}")
         raise HTTPException(
             status_code=500,
-            detail=str(e)
+            detail="Unable to process your request."
         )
     
 @app.post("/recurring-transactions")
-async def create_recurring(transaction: RecurringTransactionBase, user_id: str = Depends(get_current_user)):
+@limiter.limit("30/minute")
+async def create_recurring(request: Request, transaction: RecurringTransactionBase, user_id: str = Depends(get_current_user)):
     data = {
         "user_id": user_id,
         "amount": transaction.amount,
@@ -201,10 +206,12 @@ async def create_recurring(transaction: RecurringTransactionBase, user_id: str =
         response = supabase.table("recurring_transactions").insert(data).execute()
         return response.data[0]
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail="Unable to process your request.")
 
 @app.get("/recurring-transactions")
+@limiter.limit("60/minute")
 async def get_recurring_transactions(
+    request: Request,
     user_id: str = Depends(get_current_user)
 ):
     try:
@@ -227,7 +234,9 @@ async def get_recurring_transactions(
         )
 
 @app.put("/recurring-transactions/{id}")
+@limiter.limit("30/minute")
 async def update_recurring_transaction(
+    request: Request,
     id: str,
     transaction: RecurringTransactionBase,
     user_id: str = Depends(get_current_user)
@@ -266,13 +275,15 @@ async def update_recurring_transaction(
     except Exception as e:
         print(f"Update recurring transaction error: {e}")
         raise HTTPException(
-            status_code=400,
+            status_code=500,
             detail="Unable to update recurring transaction."
         )
 
 
 @app.delete("/recurring-transactions/{id}")
+@limiter.limit("30/minute")
 async def delete_recurring_transaction(
+    request: Request,
     id: str,
     user_id: str = Depends(get_current_user)
 ):
@@ -300,7 +311,7 @@ async def delete_recurring_transaction(
     except Exception as e:
         print(f"Delete recurring transaction error: {e}")
         raise HTTPException(
-            status_code=400,
+            status_code=500,
             detail="Unable to delete recurring transaction."
         )
 
