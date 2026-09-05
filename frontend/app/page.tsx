@@ -8,6 +8,7 @@ import {
   Zap,
   PieChart,
 } from "lucide-react";
+import Image from "next/image";
 
 export default function LandingPage() {
   const features = [
@@ -42,8 +43,14 @@ export default function LandingPage() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="bg-emerald-600 p-2 rounded-xl shadow-lg shadow-emerald-500/20">
-              <Wallet className="w-6 h-6 text-white" />
+            <div className="bg-emerald-950/30 p-2 rounded-xl backdrop-blur-md">
+              <Image
+                              src="/images/logo.jpg"
+                              alt="Monetra"
+                              width={40}
+                              height={40}
+                              className="object-contain"
+              />
             </div>
 
             <span className="text-xl font-bold text-white tracking-tight">

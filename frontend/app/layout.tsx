@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Monetra",
+  title: "Monetra | Personal Finance Manager",
   description: "Personal Finance Manager",
 };
 

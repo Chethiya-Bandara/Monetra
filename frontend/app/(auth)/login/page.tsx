@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Wallet, ArrowRight, Loader2, AlertCircle, ChevronLeft } from "lucide-react";
+import { Wallet, ArrowRight, Loader2, AlertCircle, ChevronLeft, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,9 +31,11 @@ export default function LoginPage() {
       if (response.ok && data.access_token) {
         localStorage.setItem("token", data.access_token);
         router.push("/dashboard");
-      } else {
+      } else if (response.status === 429) {
+          setError("Too many attempts. Please try again later.");
+        } else {
         setError(data.detail || "Invalid email or password");
-      }
+        }
     } catch (err: any) {
       setError("Unable to connect to the server. Please try again.");
     } finally {
@@ -105,15 +108,30 @@ export default function LoginPage() {
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Password
               </label>
+              <div className="relative mt-1">
 
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded-xl border border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
-                placeholder="••••••••"
-              />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="block w-full rounded-xl border border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-800 px-4 py-3 pr-12 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-slate-400"
+                  placeholder="••••••••"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <button

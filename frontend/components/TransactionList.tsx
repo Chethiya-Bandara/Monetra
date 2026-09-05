@@ -21,7 +21,11 @@ export default function TransactionList({ transactions, onDelete }: any) {
         </div>
       ) : (
         <ul className="space-y-3 custom-scrollbar overflow-y-auto max-h-[500px] pr-2">
-          {transactions.map((t: Transaction) => (
+          {[...transactions]
+          .sort((a: Transaction, b: Transaction) =>
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+          )
+          .map((t: Transaction) => (
             <li 
               key={t.id} 
               className="group flex items-center justify-between p-4 rounded-2xl border border-slate-50 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 hover:shadow-md transition-all"

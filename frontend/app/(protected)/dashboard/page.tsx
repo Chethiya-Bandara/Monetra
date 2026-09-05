@@ -15,6 +15,7 @@ import { ThemeToggle } from "../../../components/ThemeToggle";
 import Link from "next/link";
 import { BarChart3 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
+import Image from "next/image";
 
 export default function Home() {
   const router = useRouter();
@@ -262,10 +263,18 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950 font-sans text-slate-900 dark:text-slate-100 pb-12 transition-colors">
-      <header className="bg-white dark:bg-emerald-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
+      <header className="bg-white/30 dark:bg-emerald-900/30 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-indigo-600 p-2 rounded-lg"><Wallet className="w-6 h-6 text-white" /></div>
+            <div className="bg-slate-100 p-2 rounded-lg shadow-lg shadow-emerald-500/20">
+              <Image
+                src="/images/logo.jpg"
+                alt="Monetra"
+                width={40}
+                height={40}
+                className="object-contain"
+              />
+            </div>
             <h1 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">Monetra</h1>
           </div>
           <div className="flex items-center gap-4">
@@ -294,18 +303,7 @@ export default function Home() {
           </p>
         </div>
       </div>
-      {/* Main Content Layout with Sidebar */}
-      {/* <div className="max-w-7xl mx-auto px-6 mt-8 flex flex-col lg:flex-row gap-8"> */}
       <div className="max-w-7xl mx-auto px-6 mt-8">
-        
-        {/* Left Sidebar: ChatBot*/}
-        {/*
-        <aside className="lg:w-80 w-full shrink-0 sticky top-24 self-start">
-          <ChatBot />
-        </aside>
-        */}
-
-        {/* Right Content: Stats and Transactions */}
         <div className="flex-1 space-y-8">
           <SummaryCards balance={totalBalance} income={income} expense={expense} />
           <div className="grid xl:grid-cols-3 gap-8 items-start">

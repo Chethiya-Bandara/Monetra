@@ -12,6 +12,8 @@ import {
   LogOut,
 } from "lucide-react";
 
+import Image from "next/image";
+
 import { ThemeToggle } from "../../../../components/ThemeToggle";
 import { useRouter } from "next/navigation";
 
@@ -447,12 +449,18 @@ export default function ChartsPage() {
     <main className="min-h-screen bg-emerald-50 dark:bg-zinc-950 font-sans text-emerald-950 dark:text-emerald-50 pb-12 transition-colors">
 
       {/* TOP NAVBAR */}
-      <header className="bg-white dark:bg-emerald-950 border-b border-emerald-200 dark:border-emerald-900 sticky top-0 z-10">
+      <header className="bg-white/30 dark:bg-emerald-950/30 border-b border-emerald-200 dark:border-emerald-900 sticky top-0 z-10 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
           <div className="flex items-center gap-3">
-            <div className="bg-emerald-600 p-2 rounded-lg shadow-lg shadow-emerald-500/20">
-              <Wallet className="w-6 h-6 text-white" />
+            <div className="bg-slate-100 p-2 rounded-lg shadow-lg shadow-emerald-500/20">
+              <Image
+                src="/images/logo.jpg"
+                alt="Monetra"
+                width={40}
+                height={40}
+                className="object-contain"
+              />
             </div>
 
             <h1 className="text-xl font-bold text-emerald-900 dark:text-white tracking-tight">
