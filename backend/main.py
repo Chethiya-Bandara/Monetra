@@ -1,5 +1,8 @@
 import os
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 from fastapi.middleware.cors import CORSMiddleware
 from database import supabase
 from schemas import TransactionCreate, Transaction, TransactionBase, RecurringTransactionBase
@@ -9,7 +12,15 @@ from pydantic import BaseModel
 from supabase import create_client, Client
 import google.generativeai as genai
 
+limiter = Limiter(key_func=get_remote_address)
+
 app = FastAPI()
+
+app.state.limiter = limiter
+app.add_exception_handler(
+    RateLimitExceeded,
+    _rate_limit_exceeded_handler
+)
 
 # Allow Frontend to talk to Backend
 app.add_middleware(
@@ -22,16 +33,18 @@ app.add_middleware(
 
 supabase: Client = create_client(
     os.environ.get("SUPABASE_URL"),
-    os.environ.get("SUPABASE_KEY") # service_role key
+    os.environ.get("SUPABASE_KEY")
 )
 
 @app.get("/transactions")
-async def get_transactions(user_id: str = Depends(get_current_user)):
+@limiter.limit("60/minute")
+async def get_transactions(request: Request, user_id: str = Depends(get_current_user)):
     response = supabase.table("transactions").select("*").eq("user_id", user_id).execute()
     return response.data
 
 @app.post("/transactions")
-async def create_transaction(transaction: TransactionBase, user_id: str = Depends(get_current_user)):
+@limiter.limit("30/minute")
+async def create_transaction(request: Request, transaction: TransactionBase, user_id: str = Depends(get_current_user)):
     transaction_data = {
         "user_id": user_id,
         "amount": transaction.amount,
@@ -54,7 +67,8 @@ async def delete_transaction(id: str, user_id: str = Depends(get_current_user)):
     return {"status": "success"}
 
 @app.post("/register")
-async def register(user_data: dict):
+@limiter.limit("3/minute")
+async def register(request: Request, user_data: dict):
     # Supabase Auth registration
     response = supabase.auth.sign_up({
         "email": user_data["email"],
@@ -67,7 +81,6 @@ async def register(user_data: dict):
     })
     
     if response.user:
-        # Return the access token so the frontend can log them in immediately
         return {
             "access_token": response.session.access_token,
             "user": response.user
@@ -81,7 +94,8 @@ class LoginRequest(BaseModel):
     password: str
 
 @app.post("/login")
-async def login(credentials: LoginRequest):
+@limiter.limit("5/minute")
+async def login(request: Request, credentials: LoginRequest):
     try:
         # Sign in with Supabase
         response = supabase.auth.sign_in_with_password({
@@ -89,39 +103,30 @@ async def login(credentials: LoginRequest):
             "password": credentials.password
         })
         
-        # If successful, Supabase returns a session with a JWT
         return {
             "access_token": response.session.access_token,
             "token_type": "bearer",
             "user": response.user
         }
     except Exception as e:
-        # Supabase throws an exception if credentials are wrong
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
 # Configure Gemini for chatbot
 genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
 model = genai.GenerativeModel('gemini-2.5-flash')
-try:
-    print("--- Available Models ---")
-    for m in genai.list_models():
-        if 'generateContent' in m.supported_generation_methods:
-            print(f"Model: {m.name}")
-    print("------------------------")
-except Exception as e:
-    print(f"Could not list models: {e}")
 
 class ChatRequest(BaseModel):
     message: str
 
 
 @app.post("/chat")
+@limiter.limit("10/minute")
 async def chat_with_ai(
-    request: ChatRequest,
+    request: Request,
+    chat_request: ChatRequest,
     user_id: str = Depends(get_current_user)
 ):
     try:
-        # 1. Fetch user's transactions
         response = (
             supabase
             .table("transactions")
@@ -132,13 +137,11 @@ async def chat_with_ai(
 
         transactions = response.data
 
-        # 2. Check if the user has transactions
         if not transactions:
             return {
                 "reply": "I don't see any transactions in your account yet. Add some expenses or income so I can analyze your finances!"
             }
 
-        # 3. Keep only relevant transaction data
         essential_data = [
             {
                 "amount": t["amount"],
@@ -150,7 +153,6 @@ async def chat_with_ai(
             for t in transactions
         ]
 
-        # 4. Build AI prompt
         system_context = (
             "You are Monetra AI, a professional financial assistant. "
             "Analyze the user's spending patterns based on the transaction data. "
@@ -163,13 +165,11 @@ async def chat_with_ai(
         full_prompt = (
             f"{system_context}\n\n"
             f"User Transactions: {essential_data}\n\n"
-            f"User Question: {request.message}"
+            f"User Question: {chat_request.message}"
         )
 
-        # 5. Ask Gemini
         ai_response = model.generate_content(full_prompt)
 
-        # 6. Return response
         return {
             "reply": ai_response.text
         }
