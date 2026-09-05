@@ -7,8 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import supabase
 from schemas import TransactionCreate, Transaction, TransactionBase, RecurringTransactionBase
 from auth import get_current_user
-from typing import List
-from pydantic import BaseModel
+from typing import List, Literal
+from pydantic import BaseModel, Field
 from supabase import create_client, Client
 import google.generativeai as genai
 
@@ -116,7 +116,10 @@ genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
 model = genai.GenerativeModel('gemini-2.5-flash')
 
 class ChatRequest(BaseModel):
-    message: str
+    message: str = Field(
+        min_length=1,
+        max_length=1000
+    )
 
 
 @app.post("/chat")
