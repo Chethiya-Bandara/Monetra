@@ -2,7 +2,7 @@
 
 import RecurringTransactionList from "../../../components/RecurringTransactionList";
 import ChatBotPopup from "../../../components/ChatBotPopup";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Transaction } from "@/types";
 import SummaryCards from "../../../components/SummaryCards";
@@ -17,10 +17,81 @@ import { BarChart3 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 import Image from "next/image";
 
+interface RecurringTransaction {
+  id: string;
+  amount: number;
+  type: "income" | "expense";
+  frequency: "daily" | "weekly" | "monthly";
+  category: string;
+  description?: string;
+  start_date: string;
+  end_date?: string | null;
+}
+
+const toLocalDate = (value: string) => {
+  const datePart = value.slice(0, 10);
+  const [year, month, day] = datePart.split("-").map(Number);
+
+  return new Date(Date.UTC(year, month - 1, day));
+};
+
+const getCompletedRecurringOccurrences = (
+  transaction: RecurringTransaction
+) => {
+  const startDate = toLocalDate(transaction.start_date);
+  const now = new Date();
+  const today = new Date(
+    Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
+  );
+
+  const endDate = transaction.end_date
+    ? toLocalDate(transaction.end_date)
+    : today;
+  const cutoffDate = endDate < today ? endDate : today;
+
+  if (
+    Number.isNaN(startDate.getTime()) ||
+    Number.isNaN(cutoffDate.getTime()) ||
+    cutoffDate <= startDate
+  ) {
+    return 0;
+  }
+
+  const elapsedDays = Math.floor(
+    (cutoffDate.getTime() - startDate.getTime()) / 86_400_000
+  );
+
+  if (transaction.frequency === "daily") return elapsedDays;
+  if (transaction.frequency === "weekly") return Math.floor(elapsedDays / 7);
+
+  if (transaction.frequency === "monthly") {
+    let elapsedMonths =
+      (cutoffDate.getUTCFullYear() - startDate.getUTCFullYear()) * 12 +
+      cutoffDate.getUTCMonth() -
+      startDate.getUTCMonth();
+    const lastDayOfCutoffMonth = new Date(
+      Date.UTC(
+        cutoffDate.getUTCFullYear(),
+        cutoffDate.getUTCMonth() + 1,
+        0
+      )
+    ).getUTCDate();
+    const dueDay = Math.min(startDate.getUTCDate(), lastDayOfCutoffMonth);
+
+    if (cutoffDate.getUTCDate() < dueDay) elapsedMonths -= 1;
+
+    return Math.max(0, elapsedMonths);
+  }
+
+  return 0;
+};
+
 export default function Home() {
   const router = useRouter();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [recurringTransactions, setRecurringTransactions] = useState<any[]>([]);
+  const [recurringTransactions, setRecurringTransactions] = useState<
+    RecurringTransaction[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("there");
 
@@ -246,9 +317,31 @@ export default function Home() {
     }
   };
 
-  const totalBalance = transactions.reduce((acc, t) => t.type === "income" ? acc + t.amount : acc - t.amount, 0);
-  const income = transactions.filter((t) => t.type === "income").reduce((acc, t) => acc + t.amount, 0);
-  const expense = transactions.filter((t) => t.type === "expense").reduce((acc, t) => acc + t.amount, 0);
+  const recurringTotals = useMemo(
+    () =>
+      recurringTransactions.reduce(
+        (totals, transaction) => {
+          const accruedAmount =
+            getCompletedRecurringOccurrences(transaction) *
+            Number(transaction.amount);
+
+          totals[transaction.type as "income" | "expense"] += accruedAmount;
+          return totals;
+        },
+        { income: 0, expense: 0 }
+      ),
+    [recurringTransactions]
+  );
+
+  const income =
+    transactions
+      .filter((t) => t.type === "income")
+      .reduce((acc, t) => acc + Number(t.amount), 0) + recurringTotals.income;
+  const expense =
+    transactions
+      .filter((t) => t.type === "expense")
+      .reduce((acc, t) => acc + Number(t.amount), 0) + recurringTotals.expense;
+  const totalBalance = income - expense;
 
   const handleLogout = () => {
     localStorage.removeItem("token");
