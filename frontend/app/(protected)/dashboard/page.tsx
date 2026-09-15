@@ -16,6 +16,7 @@ import Link from "next/link";
 import { BarChart3 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 import Image from "next/image";
+import { apiUrl } from "@/lib/api";
 
 interface RecurringTransaction {
   id: string;
@@ -111,7 +112,7 @@ export default function Home() {
       try {
         // Load normal transactions
         const transactionRes = await fetch(
-          "http://localhost:8000/transactions",
+          apiUrl("/transactions"),
           {
             headers: {
               "Authorization": `Bearer ${token}`
@@ -127,7 +128,7 @@ export default function Home() {
 
         // Load recurring transactions
         const recurringRes = await fetch(
-          "http://localhost:8000/recurring-transactions",
+          apiUrl("/recurring-transactions"),
           {
             headers: {
               "Authorization": `Bearer ${token}`
@@ -171,12 +172,12 @@ export default function Home() {
           frequency: formData.frequency,
           category: formData.category,
           description: formData.text,
-          start_date: formData.date || new Date().toISOString(),
+          start_date: formData.date || new Date().toISOString().slice(0, 10),
           end_date: formData.end_date || null,
         };
 
         const recurringRes = await fetch(
-          "http://localhost:8000/recurring-transactions",
+          apiUrl("/recurring-transactions"),
           {
             method: "POST",
             headers: {
@@ -215,12 +216,12 @@ export default function Home() {
           text: formData.text,
           amount: Number(formData.amount),
           type: formData.type.toLowerCase(),
-          date: formData.date || new Date().toISOString(),
+          date: formData.date || new Date().toISOString().slice(0, 10),
           category: formData.category,
         };
 
         const transactionRes = await fetch(
-          "http://localhost:8000/transactions",
+          apiUrl("/transactions"),
           {
             method: "POST",
             headers: {
@@ -267,7 +268,7 @@ export default function Home() {
       };
 
       const res = await fetch(
-        "http://localhost:8000/transactions",
+        apiUrl("/transactions"),
         {
           method: "POST",
           headers: {
@@ -305,7 +306,7 @@ export default function Home() {
   const handleDelete = async (id: string) => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`http://localhost:8000/transactions/${id}`, {
+      const res = await fetch(apiUrl(`/transactions/${id}`), {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });

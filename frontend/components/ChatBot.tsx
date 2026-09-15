@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Send, Bot } from "lucide-react";
 import MarkdownContent from "./MarkdownContent";
+import { apiUrl } from "@/lib/api";
 
 export default function ChatBot() {
   const [input, setInput] = useState("");
@@ -31,7 +32,7 @@ export default function ChatBot() {
         throw new Error("No authentication token found.");
       }
 
-      const res = await fetch("http://127.0.0.1:8000/chat", {
+      const res = await fetch(apiUrl("/chat"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,6 +42,12 @@ export default function ChatBot() {
           message: userMsg,
         }),
       });
+
+      if (res.status === 401) {
+        localStorage.removeItem("token");
+        window.location.assign("/login");
+        return;
+      }
 
       if (!res.ok) {
         const errorText = await res.text();

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AlertCircle, ArrowRight, Loader2 } from "lucide-react";
 import AuthShell from "@/components/auth/AuthShell";
 import PasswordInput from "@/components/auth/PasswordInput";
+import { apiUrl } from "@/lib/api";
 
 const inputClassName = "mt-2 block h-12 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:border-slate-600 dark:disabled:bg-slate-800";
 
@@ -18,7 +19,7 @@ export default function RegisterPage() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); setLoading(true); setError("");
     try {
-      const response = await fetch("http://localhost:8000/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(formData) });
+      const response = await fetch(apiUrl("/register"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(formData) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.detail || "Registration failed");
       router.push("/login?message=Account created successfully. Please log in.");

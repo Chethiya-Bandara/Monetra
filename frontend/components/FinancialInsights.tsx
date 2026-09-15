@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Sparkles, Loader2 } from "lucide-react";
 import MarkdownContent from "./MarkdownContent";
+import { apiUrl } from "@/lib/api";
 
 export default function FinancialInsights() {
   const [insight, setInsight] = useState<string>("");
@@ -15,7 +16,7 @@ export default function FinancialInsights() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/chat", {
+      const res = await fetch(apiUrl("/chat"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -26,6 +27,12 @@ export default function FinancialInsights() {
             "Give me a quick 3-bullet point summary of my recent spending and one suggestion. Also a section saying 'you've spent x% more on a category than last week' type stat.",
         }),
       });
+
+      if (res.status === 401) {
+        localStorage.removeItem("token");
+        window.location.assign("/login");
+        return;
+      }
 
       if (!res.ok) {
         throw new Error(`AI API returned ${res.status}`);

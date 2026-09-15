@@ -25,7 +25,7 @@ export default function TransactionForm({ onAdd }: any) {
       category,
       amount: parseFloat(amount),
       type,
-      date: new Date().toISOString(),
+      date: new Date().toISOString().slice(0, 10),
     };
 
     // If recurring, add the extra fields

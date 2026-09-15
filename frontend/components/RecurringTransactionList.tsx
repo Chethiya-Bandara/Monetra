@@ -13,6 +13,7 @@ import {
   Loader2,
   Tag,
 } from "lucide-react";
+import { apiUrl } from "@/lib/api";
 
 interface RecurringTransaction {
   id: string;
@@ -140,7 +141,7 @@ export default function RecurringTransactionList({
       };
 
       const res = await fetch(
-        `http://localhost:8000/recurring-transactions/${id}`,
+        apiUrl(`/recurring-transactions/${id}`),
         {
           method: "PUT",
           headers: {
@@ -193,7 +194,7 @@ export default function RecurringTransactionList({
 
     try {
       const res = await fetch(
-        `http://localhost:8000/recurring-transactions/${id}`,
+        apiUrl(`/recurring-transactions/${id}`),
         {
           method: "DELETE",
           headers: {

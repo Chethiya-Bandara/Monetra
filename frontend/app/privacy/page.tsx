@@ -46,7 +46,7 @@ export default function PrivacyPolicy() {
             </h1>
 
             <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-3">
-              Last updated: September 2, 2026
+              Last updated: September 15, 2026
             </p>
 
           </div>
@@ -142,6 +142,15 @@ export default function PrivacyPolicy() {
                 observations based on the information available in your
                 Monetra account. It should not be treated as professional
                 financial advice.
+              </p>
+
+              <p className="mt-3">
+                To generate an AI response, Monetra sends the question you
+                submit and a limited set of relevant transaction details,
+                including amounts, categories, dates, and short descriptions,
+                to Gemini. Do not include account credentials, card numbers,
+                or other sensitive information in transaction descriptions or
+                AI messages.
               </p>
 
               <p className="mt-3">

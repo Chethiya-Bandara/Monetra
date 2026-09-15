@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { apiUrl } from "@/lib/api";
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -9,14 +10,21 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Replace this with your actual backend auth check
     const checkAuth = async () => {
       const token = localStorage.getItem("token"); // Or check a cookie
-      
       if (!token) {
-        router.push("/login");
+        router.replace("/login");
       } else {
-        setIsAuthenticated(true);
+        try {
+          const response = await fetch(apiUrl("/auth/session"), {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!response.ok) throw new Error("Invalid session");
+          setIsAuthenticated(true);
+        } catch {
+          localStorage.removeItem("token");
+          router.replace("/login");
+        }
       }
       setLoading(false);
     };

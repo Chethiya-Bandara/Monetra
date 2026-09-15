@@ -16,6 +16,7 @@ import Image from "next/image";
 
 import { ThemeToggle } from "../../../../components/ThemeToggle";
 import { useRouter } from "next/navigation";
+import { apiUrl } from "@/lib/api";
 
 import {
   BarChart,
@@ -74,7 +75,7 @@ export default function ChartsPage() {
       const token = localStorage.getItem("token");
 
       try {
-        const res = await fetch("http://localhost:8000/transactions", {
+        const res = await fetch(apiUrl("/transactions"), {
           headers: {
             Authorization: `Bearer ${token}`,
           },
