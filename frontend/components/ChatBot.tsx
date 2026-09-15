@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Send, Bot, User } from "lucide-react";
+import { Send, Bot } from "lucide-react";
+import MarkdownContent from "./MarkdownContent";
 
 export default function ChatBot() {
   const [input, setInput] = useState("");
@@ -104,7 +105,7 @@ export default function ChatBot() {
                   : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
               }`}
             >
-              {m.text}
+              {m.role === "ai" ? <MarkdownContent content={m.text} /> : m.text}
             </div>
           </div>
         ))}

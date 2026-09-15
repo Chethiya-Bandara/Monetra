@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Sparkles, Loader2 } from "lucide-react";
+import MarkdownContent from "./MarkdownContent";
 
 export default function FinancialInsights() {
   const [insight, setInsight] = useState<string>("");
@@ -87,9 +88,7 @@ export default function FinancialInsights() {
 
       {insight && !loading && (
         <>
-          <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
-            {insight}
-          </div>
+          <MarkdownContent content={insight} className="text-sm leading-relaxed text-slate-600 dark:text-slate-300" />
 
           <div className="mt-5 flex justify-end">
             <button
