@@ -435,7 +435,7 @@ export default function ChartsPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-emerald-50 dark:bg-zinc-950">
+      <div className="flex h-screen items-center justify-center bg-[#f4f7f6] dark:bg-[#10231f]">
         <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
       </div>
     );
@@ -446,7 +446,7 @@ export default function ChartsPage() {
   // --------------------------------------------------
 
   return (
-    <main className="min-h-screen bg-emerald-50 dark:bg-zinc-950 font-sans text-emerald-950 dark:text-emerald-50 pb-12 transition-colors">
+    <main className="min-h-screen bg-[#f4f7f6] dark:bg-[#10231f] font-sans text-emerald-950 dark:text-emerald-50 pb-12 transition-colors">
 
       {/* TOP NAVBAR */}
       <header className="bg-white/30 dark:bg-emerald-950/30 border-b border-emerald-200 dark:border-emerald-900 sticky top-0 z-10 backdrop-blur-md">
@@ -491,7 +491,7 @@ export default function ChartsPage() {
         </div>
       </header>
 
-      <div className="min-h-screen bg-emerald-50 dark:bg-zinc-950 p-4 md:p-8">
+      <div className="min-h-screen bg-[#f4f7f6] dark:bg-[#10231f] p-4 md:p-8">
 
         <div className="max-w-6xl mx-auto space-y-8">
 

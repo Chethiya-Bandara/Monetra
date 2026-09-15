@@ -349,14 +349,14 @@ export default function Home() {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen flex items-center justify-center bg-[#f4f7f6] dark:bg-[#10231f]">
       <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
     </div>
   );
 
   return (
-    <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950 font-sans text-slate-900 dark:text-slate-100 pb-12 transition-colors">
-      <header className="bg-white/30 dark:bg-emerald-900/30 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 backdrop-blur-md">
+    <main className="min-h-screen bg-[#f4f7f6] dark:bg-[#10231f] font-sans text-slate-900 dark:text-slate-100 pb-12 transition-colors">
+      <header className="bg-white/30 dark:bg-emerald-950/30 border-b border-emerald-200 dark:border-emerald-900 sticky top-0 z-10 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-slate-100 p-2 rounded-lg shadow-lg shadow-emerald-500/20">
