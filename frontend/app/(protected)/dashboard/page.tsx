@@ -356,8 +356,8 @@ export default function Home() {
   );
 
   return (
-    <main className="min-h-screen bg-[#f4f7f6] dark:bg-[#10231f] font-sans text-slate-900 dark:text-slate-100 pb-12 transition-colors">
-      <header className="bg-white/30 dark:bg-emerald-950/30 border-b border-emerald-200 dark:border-emerald-900 sticky top-0 z-10 backdrop-blur-md">
+    <main className="min-h-screen bg-[#edf7f2] pb-12 font-sans text-slate-900 transition-colors dark:bg-[#10231f] dark:text-slate-100">
+      <header className="sticky top-0 z-10 border-b border-emerald-200/80 bg-white/80 backdrop-blur-xl dark:border-emerald-900 dark:bg-emerald-950/80">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-slate-100 p-2 rounded-lg shadow-lg shadow-emerald-500/20">
@@ -386,18 +386,17 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 mt-8">
-        <div className="py-8">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Hey {userName}!
-          </h1>
-
-          <p className="mt-3 text-lg text-slate-500 dark:text-slate-400">
-            Get started by tracking your finances and taking control of your money.
-          </p>
+      <div className="mx-auto mt-8 max-w-7xl px-6">
+        <div className="relative overflow-hidden rounded-3xl border border-emerald-800/20 bg-emerald-900 px-7 py-10 text-white shadow-xl shadow-emerald-950/15 md:px-10">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(110,231,183,0.25),_transparent_35%)]" />
+          <div className="relative">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-emerald-300">Personal finance dashboard</p>
+            <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Hey {userName}!</h1>
+            <p className="mt-3 max-w-2xl text-lg text-emerald-50/80">Get started by tracking your finances and taking control of your money.</p>
+          </div>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto px-6 mt-8">
+      <div className="mx-auto mt-8 max-w-7xl px-6">
         <div className="flex-1 space-y-8">
           <SummaryCards balance={totalBalance} income={income} expense={expense} />
           <div className="grid xl:grid-cols-3 gap-8 items-start">
@@ -425,12 +424,12 @@ export default function Home() {
         </div>
       </div>
       <ChatBotPopup />
-      <footer className="mt-12 border-t border-slate-200 dark:border-slate-800 py-6">
+      <footer className="mt-12 border-t border-emerald-200 dark:border-emerald-900 py-6">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <div className="flex justify-center gap-4 mb-2">
             <Link
               href="/privacy"
-              className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              className="text-sm text-slate-500 transition-colors hover:text-emerald-700 dark:text-slate-400 dark:hover:text-emerald-400"
             >
               Privacy Policy
             </Link>

@@ -9,6 +9,7 @@ import {
   TrendingDown,
   Wallet,
   Receipt,
+  Sparkles,
   LogOut,
 } from "lucide-react";
 
@@ -66,10 +67,6 @@ export default function ChartsPage() {
     "#ffbf00",
   ];
 
-  // --------------------------------------------------
-  // FETCH TRANSACTIONS
-  // --------------------------------------------------
-
   useEffect(() => {
     const fetchTransactions = async () => {
       const token = localStorage.getItem("token");
@@ -97,19 +94,12 @@ export default function ChartsPage() {
     fetchTransactions();
   }, []);
 
-  // --------------------------------------------------
-  // HELPER
-  // --------------------------------------------------
 
   const formatCurrency = (amount: number) => {
     return `Rs. ${Number(amount).toLocaleString("en-LK", {
       maximumFractionDigits: 0,
     })}`;
   };
-
-  // --------------------------------------------------
-  // SUMMARY
-  // --------------------------------------------------
 
   const totalIncome = useMemo(() => {
     return transactions
@@ -140,10 +130,6 @@ export default function ChartsPage() {
     expenseTransactions.length > 0
       ? totalExpense / expenseTransactions.length
       : 0;
-
-  // --------------------------------------------------
-  // LAST 7 DAYS
-  // --------------------------------------------------
 
   const weeklyFlowData = useMemo(() => {
     const days = [];
@@ -185,10 +171,6 @@ export default function ChartsPage() {
     return days;
   }, [transactions]);
 
-  // --------------------------------------------------
-  // MONTHLY DATA
-  // --------------------------------------------------
-
   const monthlyData = useMemo(() => {
     const groups: Record<
       string,
@@ -227,10 +209,6 @@ export default function ChartsPage() {
     return Object.values(groups);
   }, [transactions]);
 
-  // --------------------------------------------------
-  // CATEGORY DATA
-  // --------------------------------------------------
-
   const categoryData = useMemo(() => {
     const categories: Record<string, number> = {};
 
@@ -255,10 +233,6 @@ export default function ChartsPage() {
       .sort((a, b) => b.value - a.value);
   }, [transactions]);
 
-  // --------------------------------------------------
-  // TOP 5 EXPENSES
-  // --------------------------------------------------
-
   const topExpenses = useMemo(() => {
     return [...transactions]
       .filter((t) => t.type === "expense")
@@ -267,10 +241,6 @@ export default function ChartsPage() {
   }, [transactions]);
 
   const largestExpense = topExpenses[0]?.amount || 0;
-
-  // --------------------------------------------------
-  // NET BALANCE TRAJECTORY
-  // --------------------------------------------------
 
   const cumulativeData = useMemo(() => {
     let runningBalance = 0;
@@ -299,10 +269,6 @@ export default function ChartsPage() {
         };
       });
   }, [transactions]);
-
-  // --------------------------------------------------
-  // 30-DAY SPENDING TREND
-  // --------------------------------------------------
 
   const spendingTrendData = useMemo(() => {
     const days = [];
@@ -342,10 +308,6 @@ export default function ChartsPage() {
     return days;
   }, [transactions]);
 
-  // --------------------------------------------------
-  // SPENDING BY WEEKDAY
-  // --------------------------------------------------
-
   const weekdayData = useMemo(() => {
     const days = [
       { name: "Sun", expense: 0 },
@@ -367,10 +329,6 @@ export default function ChartsPage() {
 
     return days;
   }, [transactions]);
-
-  // --------------------------------------------------
-  // FINANCIAL INSIGHTS
-  // --------------------------------------------------
 
   const financialInsights = useMemo(() => {
     const insights: string[] = [];
@@ -430,10 +388,6 @@ export default function ChartsPage() {
     averageExpense,
   ]);
 
-  // --------------------------------------------------
-  // LOADING
-  // --------------------------------------------------
-
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#f4f7f6] dark:bg-[#10231f]">
@@ -442,15 +396,12 @@ export default function ChartsPage() {
     );
   }
 
-  // --------------------------------------------------
-  // UI
-  // --------------------------------------------------
 
   return (
-    <main className="min-h-screen bg-[#f4f7f6] dark:bg-[#10231f] font-sans text-emerald-950 dark:text-emerald-50 pb-12 transition-colors">
+    <main className="min-h-screen bg-[#edf7f2] pb-12 font-sans text-emerald-950 transition-colors dark:bg-[#10231f] dark:text-emerald-50">
 
       {/* TOP NAVBAR */}
-      <header className="bg-white/30 dark:bg-emerald-950/30 border-b border-emerald-200 dark:border-emerald-900 sticky top-0 z-10 backdrop-blur-md">
+      <header className="sticky top-0 z-10 border-b border-emerald-200/80 bg-white/80 backdrop-blur-xl dark:border-emerald-900 dark:bg-emerald-950/80">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
           <div className="flex items-center gap-3">
@@ -492,26 +443,21 @@ export default function ChartsPage() {
         </div>
       </header>
 
-      <div className="min-h-screen bg-[#f4f7f6] dark:bg-[#10231f] p-4 md:p-8">
+      <div className="min-h-screen bg-gradient-to-b from-emerald-100/50 via-[#edf7f2] to-[#edf7f2] p-4 dark:from-emerald-950/30 dark:via-[#10231f] dark:to-[#10231f] md:p-8">
 
         <div className="max-w-6xl mx-auto space-y-8">
 
           {/* HEADER */}
-          <div className="flex items-center gap-4">
+          <div className="relative overflow-hidden rounded-3xl border border-emerald-800/20 bg-emerald-900 px-7 py-9 text-white shadow-xl shadow-emerald-950/15 sm:flex sm:flex-row sm:items-center sm:gap-4 md:px-10">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(110,231,183,0.25),_transparent_35%)]" />
 
-            <Link
-              href="/dashboard"
-              className="p-2 hover:bg-white dark:hover:bg-emerald-900 rounded-xl shadow-sm transition-all border border-transparent dark:border-emerald-900"
-            >
-              <ArrowLeft className="w-5 h-5 text-emerald-700 dark:text-emerald-300" />
-            </Link>
-
-            <div>
-              <h1 className="text-2xl font-bold text-emerald-950 dark:text-white">
+            <div className="relative flex-1">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Analytics overview</p>
+              <h1 className="text-3xl font-bold tracking-tight text-white">
                 Financial Analytics
               </h1>
 
-              <p className="text-sm text-emerald-700 dark:text-emerald-300 mt-1">
+              <p className="mt-2 text-sm text-emerald-50/80">
                 Understand your financial activity and spending patterns
               </p>
             </div>
@@ -520,10 +466,10 @@ export default function ChartsPage() {
 
           {/* SUMMARY CARDS */}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
 
             {/* Income */}
-            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-emerald-200 dark:border-emerald-900 shadow-sm">
+            <div className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm shadow-emerald-950/5 dark:border-emerald-900/50 dark:bg-slate-900">
 
               <div className="flex items-center justify-between">
 
@@ -544,7 +490,7 @@ export default function ChartsPage() {
             </div>
 
             {/* Expenses */}
-            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-rose-200 dark:border-rose-900 shadow-sm">
+            <div className="rounded-2xl border border-rose-100 bg-white p-6 shadow-sm shadow-rose-950/5 dark:border-rose-900/50 dark:bg-slate-900">
 
               <div className="flex items-center justify-between">
 
@@ -565,7 +511,7 @@ export default function ChartsPage() {
             </div>
 
             {/* Balance */}
-            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-emerald-200 dark:border-zinc-900 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-950/5 dark:border-slate-800 dark:bg-slate-900">
 
               <div className="flex items-center justify-between">
 
@@ -586,21 +532,21 @@ export default function ChartsPage() {
             </div>
 
             {/* Savings */}
-            <div className="bg-white dark:bg-emerald-950 p-6 rounded-2xl border border-emerald-200 dark:border-emerald-900 shadow-sm">
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-600 p-6 text-white shadow-lg shadow-emerald-600/15 dark:border-emerald-700 dark:bg-emerald-900">
 
               <div className="flex items-center justify-between">
 
-                <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                <p className="text-sm text-emerald-50">
                   Savings Rate
                 </p>
 
-                <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900">
-                  <Receipt className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <div className="p-2 rounded-lg bg-white/15">
+                  <Receipt className="w-5 h-5 text-white" />
                 </div>
 
               </div>
 
-              <h2 className="text-2xl font-bold mt-3 text-emerald-950 dark:text-white">
+              <h2 className="text-2xl font-bold mt-3 text-white">
                 {savingsRate.toFixed(1)}%
               </h2>
 
@@ -610,7 +556,7 @@ export default function ChartsPage() {
 
           {/* LAST 7 DAYS */}
 
-          <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 
             <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
               Last 7 Days
@@ -671,7 +617,7 @@ export default function ChartsPage() {
 
           {/* MONTHLY */}
 
-          <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 
             <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
               Monthly Income vs Expenses
@@ -728,7 +674,7 @@ export default function ChartsPage() {
 
             {/* Categories */}
 
-            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 
               <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
                 Spending by Category
@@ -776,7 +722,7 @@ export default function ChartsPage() {
 
             {/* Top Expenses */}
 
-            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 
               <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
                 Top 5 Expenses
@@ -843,7 +789,7 @@ export default function ChartsPage() {
 
           {/* NET BALANCE */}
 
-          <div className="bg-white dark:bg-emerald-950 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
+          <div className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm dark:border-emerald-900/50 dark:bg-slate-900">
 
             <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
               Net Balance Trajectory
@@ -915,7 +861,7 @@ export default function ChartsPage() {
 
           {/* 30 DAY TREND */}
 
-          <div className="bg-white dark:bg-red-950 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
+          <div className="rounded-2xl border border-rose-100 bg-white p-6 shadow-sm dark:border-rose-900/50 dark:bg-slate-900">
 
             <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
               30-Day Spending Trend
@@ -965,7 +911,7 @@ export default function ChartsPage() {
 
             {/* Weekday */}
 
-            <div className="lg:col-span-2 bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
+            <div className="lg:col-span-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 
               <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
                 Spending by Day of Week
@@ -1009,7 +955,7 @@ export default function ChartsPage() {
 
             {/* Statistics */}
 
-            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-900 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 
               <h3 className="text-lg font-semibold mb-6 text-emerald-900 dark:text-emerald-100">
                 Transaction Statistics
@@ -1061,9 +1007,10 @@ export default function ChartsPage() {
 
           {/* FINANCIAL INSIGHTS */}
 
-          <div className="bg-white dark:bg-emerald-950 p-6 rounded-2xl border border-emerald-200 dark:border-emerald-900 shadow-sm">
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-6 shadow-sm dark:border-emerald-900/60 dark:bg-emerald-950/30">
 
-            <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
+            <h3 className="flex items-center gap-2 text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
+              <Sparkles className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
               Financial Insights
             </h3>
 

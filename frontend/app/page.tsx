@@ -10,6 +10,10 @@ import {
   ShieldCheck,
   Zap,
   PieChart,
+  BarChart3,
+  BellRing,
+  Globe2,
+  WalletCards,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -141,6 +145,74 @@ export default function LandingPage() {
               },
             }
           );
+
+          gsap.fromTo(
+            ".habits-copy",
+            { autoAlpha: 0, x: -32 },
+            {
+              autoAlpha: 1,
+              x: 0,
+              duration: 0.75,
+              clearProps: "opacity,visibility,transform",
+              scrollTrigger: {
+                trigger: ".habits-section",
+                start: "top 75%",
+                once: true,
+              },
+            }
+          );
+
+          gsap.fromTo(
+            ".habits-chart",
+            { autoAlpha: 0, x: 32, scale: 0.96 },
+            {
+              autoAlpha: 1,
+              x: 0,
+              scale: 1,
+              duration: 0.85,
+              ease: "power3.out",
+              clearProps: "opacity,visibility,transform",
+              scrollTrigger: {
+                trigger: ".habits-section",
+                start: "top 75%",
+                once: true,
+              },
+            }
+          );
+
+          gsap.fromTo(
+            ".habit-bar",
+            { scaleY: 0 },
+            {
+              scaleY: 1,
+              transformOrigin: "bottom",
+              duration: 0.65,
+              stagger: 0.09,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: ".habits-chart",
+                start: "top 82%",
+                once: true,
+              },
+            }
+          );
+
+          gsap.fromTo(
+            ".landing-detail-card",
+            { autoAlpha: 0, y: 22 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.6,
+              stagger: 0.1,
+              clearProps: "opacity,visibility,transform",
+              scrollTrigger: {
+                trigger: ".landing-detail-features",
+                start: "top 80%",
+                once: true,
+              },
+            }
+          );
         }
       );
 
@@ -190,7 +262,7 @@ export default function LandingPage() {
 
       <div className="relative z-10">
 
-        <section className="px-6 pt-40 pb-32 text-center max-w-5xl mx-auto">
+        <section className="px-6 pt-40 pb-24 text-center max-w-5xl mx-auto">
 
           <h1 ref={heroHeadingRef} className="text-4xl md:text-8xl font-extrabold text-white tracking-tighter mb-8 leading-[0.9] drop-shadow-lg">
             Track your money <br />
@@ -214,14 +286,119 @@ export default function LandingPage() {
 
         </section>
 
+        <section className="habits-section overflow-hidden bg-white py-20 text-zinc-900 dark:bg-zinc-950/90 dark:text-white sm:py-24">
+          <div className="mx-auto grid max-w-7xl items-center gap-14 px-6 lg:grid-cols-2 lg:gap-20">
+            <div className="habits-copy max-w-xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-300">
+                Your money, made visible
+              </p>
+
+              <h2 className="mt-5 text-4xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-5xl">
+                Understand your financial habits.
+              </h2>
+
+              <p className="mt-6 text-lg leading-relaxed text-zinc-600 dark:text-emerald-50/75">
+                See where your money goes, notice the rhythms behind your spending,
+                and make every decision with a clearer picture of what matters.
+              </p>
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5 backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.06]">
+                  <p className="text-sm text-zinc-500 dark:text-emerald-100/70">
+                    Monthly saving
+                  </p>
+
+                  <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">
+                    +24.8%
+                  </p>
+
+                  <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-300">
+                    Compared with last month
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5 backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.06]">
+                  <p className="text-sm text-zinc-500 dark:text-emerald-100/70">
+                    Top category
+                  </p>
+
+                  <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">
+                    Essentials
+                  </p>
+
+                  <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-300">
+                    42% of your spending
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="habits-chart rounded-[2rem] border border-zinc-200 bg-zinc-50 p-5 shadow-2xl shadow-zinc-200/60 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.08] dark:shadow-black/20 sm:p-7">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm text-zinc-500 dark:text-emerald-100/70">
+                    Spending overview
+                  </p>
+
+                  <p className="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">
+                    Rs. 48,250
+                  </p>
+                </div>
+
+                <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-200">
+                  This month
+                </span>
+              </div>
+
+              <div className="mt-9 flex h-48 items-end justify-between gap-3 border-b border-zinc-200 pb-4 dark:border-white/10">
+                {[40, 66, 48, 82, 56, 92, 70].map((height, index) => (
+                  <div key={index} className="flex h-full flex-1 items-end">
+                    <div
+                      className="habit-bar w-full rounded-t-lg bg-gradient-to-t from-emerald-500 to-emerald-300"
+                      style={{ height: `${height}%` }}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-3 flex justify-between text-xs text-zinc-400 dark:text-emerald-100/55">
+                <span>Mon</span>
+                <span>Tue</span>
+                <span>Wed</span>
+                <span>Thu</span>
+                <span>Fri</span>
+                <span>Sat</span>
+                <span>Sun</span>
+              </div>
+
+              <div className="mt-7 flex items-center gap-4 rounded-2xl bg-zinc-100 p-4 dark:bg-black/15">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-400/15 dark:text-emerald-300">
+                  <PieChart className="h-5 w-5" />
+                </div>
+
+                <div>
+                  <p className="text-sm font-semibold text-zinc-900 dark:text-white">
+                    Spending is under control
+                  </p>
+
+                  <p className="mt-1 text-xs text-zinc-500 dark:text-emerald-100/65">
+                    You&apos;re below your monthly average.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+
         {/* Features */}
-        <section ref={featuresRef} className="bg-white dark:bg-zinc-950">
-          <div className="max-w-7xl mx-auto px-6 py-24">
+        <section ref={featuresRef} className="bg-white dark:bg-zinc-950/90">
+          <div className="max-w-7xl mx-auto px-6 py-20">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {features.map((feature, i) => (
                 <div
                   key={i}
-                  className="landing-feature-card p-8 rounded-3xl bg-slate-50 dark:bg-zinc-900 border border-emerald-200 dark:border-slate-800"
+                  className="landing-feature-card p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-white dark:border-zinc-950 shadow-sm"
                 >
 
                   <div className="bg-emerald-50 dark:bg-emerald-500/10 w-14 h-14 rounded-2xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-6">
@@ -243,28 +420,30 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="relative isolate overflow-hidden bg-white py-24 sm:py-32 dark:bg-zinc-950">
-          <div
-            className="
-              absolute inset-0 -z-10
-              bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.18),_rgba(236,253,245,0.45)_35%,_transparent_70%)]
-              dark:bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.16),_transparent_55%)]
-            "
-          />
-          <div
-            className="
-              absolute inset-x-0 bottom-0 -z-10 h-1/2
-              bg-gradient-to-t from-emerald-50/70 to-transparent
-              dark:from-emerald-950/10
-            "
-          />
-          <div
-            className="
-              absolute inset-x-0 top-0 -z-10 h-px
-              bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent
-              dark:via-emerald-400/50
-            "
-          />
+        <section className="landing-detail-features bg-white py-20 dark:bg-zinc-950/90 sm:py-24">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-400">Built for everyday clarity</p>
+              <h2 className="mt-4 text-4xl font-bold tracking-tight text-emerald-950 dark:text-white sm:text-5xl">Features that make progress feel simple.</h2>
+            </div>
+            <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+              {[
+                { icon: <WalletCards className="h-6 w-6" />, title: "One clear view", description: "Keep income, expenses, and recurring payments together." },
+                { icon: <BarChart3 className="h-6 w-6" />, title: "Visual analytics", description: "Turn your activity into clear, useful financial patterns." },
+                { icon: <BellRing className="h-6 w-6" />, title: "Smart reminders", description: "Stay ahead of regular payments and important due dates." },
+                { icon: <Globe2 className="h-6 w-6" />, title: "Always in sync", description: "Access your personal financial picture whenever you need it." },
+              ].map((feature) => (
+                <div key={feature.title} className="landing-detail-card rounded-3xl border border-white bg-white p-7 transition-transform duration-300 dark:border-emerald-900 dark:bg-zinc-900">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950/15 dark:text-emerald-300">{feature.icon}</div>
+                  <h3 className="mt-6 text-xl font-bold text-emerald-950 dark:text-white">{feature.title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-emerald-800/70 dark:text-emerald-100/65">{feature.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="relative isolate overflow-hidden bg-white py-20 sm:py-24 dark:bg-zinc-950/90">
 
           <div className="mx-auto flex w-full max-w-7xl flex-col items-center px-4 md:px-8 lg:px-12">
             <div className="mb-12 max-w-3xl text-center">
