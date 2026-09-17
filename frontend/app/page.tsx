@@ -354,7 +354,7 @@ export default function LandingPage() {
                 {[40, 66, 48, 82, 56, 92, 70].map((height, index) => (
                   <div key={index} className="flex h-full flex-1 items-end">
                     <div
-                      className="habit-bar w-full rounded-t-lg bg-gradient-to-t from-emerald-500 to-emerald-300"
+                      className="habit-bar w-full rounded-t-lg bg-gradient-to-t from-red-500 to-red-300"
                       style={{ height: `${height}%` }}
                     />
                   </div>
