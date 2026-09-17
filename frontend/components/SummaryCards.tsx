@@ -30,7 +30,7 @@ export default function SummaryCards({ balance, income, expense }: SummaryCardsP
       </div>
       
       {/* Income Card - Subtle Glassmorphism in Dark Mode */}
-      <div className="bg-white dark:bg-zinc-700 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 transition-all">
+      <div className="bg-white dark:bg-zinc-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-zinc-950 transition-all">
         <div className="flex justify-between items-start">
           <div>
             <p className="text-slate-500 dark:text-slate-300 text-sm font-medium uppercase tracking-wider">
@@ -48,7 +48,7 @@ export default function SummaryCards({ balance, income, expense }: SummaryCardsP
       </div>
 
       {/* Expense Card */}
-      <div className="bg-white dark:bg-zinc-700 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 transition-all">
+      <div className="bg-white dark:bg-zinc-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 transition-all">
         <div className="flex justify-between items-start">
           <div>
             <p className="text-slate-500 dark:text-slate-300 text-sm font-medium uppercase tracking-wider">

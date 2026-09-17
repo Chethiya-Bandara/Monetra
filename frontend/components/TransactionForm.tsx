@@ -43,7 +43,7 @@ export default function TransactionForm({ onAdd }: any) {
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 transition-all">
+    <div className="h-full bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-zinc-950 transition-all">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-slate-800 dark:text-white">New Transaction</h3>
         

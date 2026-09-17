@@ -349,14 +349,31 @@ export default function Home() {
     router.push("/");
   };
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f4f7f6] dark:bg-[#10231f]">
-      <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f4f7f6] dark:bg-zinc-950">
+
+        <div className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-400/10 blur-3xl dark:bg-emerald-500/10" />
+        <div className="relative flex flex-col items-center">
+          <div className="relative mb-6">
+            <div className="absolute inset-0 rounded-2xl bg-emerald-500/20 blur-xl animate-pulse" />
+          </div>
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+            Loading...
+          </p>
+          <div className="mt-6 flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-500 [animation-delay:-0.3s]" />
+            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-500 [animation-delay:-0.15s]" />
+            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-500" />
+          </div>
+
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <main className="min-h-screen bg-[#edf7f2] pb-12 font-sans text-slate-900 transition-colors dark:bg-[#10231f] dark:text-slate-100">
+    <main className="min-h-screen bg-[#edf7f2] pb-12 font-sans text-slate-900 transition-colors dark:bg-zinc-950 dark:text-slate-100">
       <header className="sticky top-0 z-10 border-b border-emerald-200/80 bg-white/80 backdrop-blur-xl dark:border-emerald-900 dark:bg-emerald-950/80">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -391,7 +408,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(110,231,183,0.25),_transparent_35%)]" />
           <div className="relative">
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-emerald-300">Personal finance dashboard</p>
-            <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Hey {userName}!</h1>
+            <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Hello, {userName}!</h1>
             <p className="mt-3 max-w-2xl text-lg text-emerald-50/80">Get started by tracking your finances and taking control of your money.</p>
           </div>
         </div>
@@ -399,9 +416,9 @@ export default function Home() {
       <div className="mx-auto mt-8 max-w-7xl px-6">
         <div className="flex-1 space-y-8">
           <SummaryCards balance={totalBalance} income={income} expense={expense} />
-          <div className="grid xl:grid-cols-3 gap-8 items-start">
-            <div className="xl:col-span-2"><TransactionForm onAdd={handleAdd} /></div>
-            <div className="xl:col-span-1"><TransactionList transactions={transactions} onDelete={handleDelete} /></div>
+          <div className="grid items-start gap-8 xl:grid-cols-3 xl:items-stretch">
+            <div className="xl:col-span-1 xl:h-full"><TransactionForm onAdd={handleAdd} /></div>
+            <div className="xl:col-span-2 xl:h-full"><TransactionList transactions={transactions} onDelete={handleDelete} /></div>
           </div>
           <RecurringTransactionList
             transactions={recurringTransactions}

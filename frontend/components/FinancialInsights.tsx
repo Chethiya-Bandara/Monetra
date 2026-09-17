@@ -56,7 +56,7 @@ export default function FinancialInsights() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-800/50 dark:to-emerald-900 p-6 rounded-2xl border border-indigo-100 dark:border-slate-800 shadow-sm transition-all">
+    <div className="bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-800/50 dark:to-emerald-900 p-6 rounded-2xl border border-indigo-100 dark:border-zinc-950 shadow-sm transition-all">
       
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">

@@ -271,7 +271,7 @@ export default function LandingPage() {
 
           <p ref={heroCopyRef} className="text-xl text-emerald-50 mb-10 max-w-2xl mx-auto leading-relaxed">
             Record income, expenses, and recurring transactions in one place,
-            then use clear analytics and AI insights to understand your finances.
+            then use clear analytics and get insights to understand your finances.
           </p>
 
           <div ref={heroCtaRef} className="flex justify-center">
@@ -444,19 +444,22 @@ export default function LandingPage() {
         </section>
 
         <section className="relative isolate overflow-hidden bg-white py-20 sm:py-24 dark:bg-zinc-950/90">
+          <div className="mx-auto grid w-full max-w-7xl items-center gap-12 px-4 md:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 lg:px-12">
 
-          <div className="mx-auto flex w-full max-w-7xl flex-col items-center px-4 md:px-8 lg:px-12">
-            <div className="mb-12 max-w-3xl text-center">
-              <h2 className="mt-6 text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl dark:text-white">
+            <div className="max-w-xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">
+                Financial clarity
+              </p>
+
+              <h2 className="mt-4 text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl dark:text-white">
                 Clarity in every transaction.
               </h2>
 
-              <p className="mt-5 text-lg leading-relaxed text-zinc-600 sm:text-xl dark:text-zinc-300">
+              <p className="mt-6 text-lg leading-relaxed text-zinc-600 sm:text-xl dark:text-zinc-300">
                 Bring your finances together, uncover spending patterns, and gain
                 smarter insights with intuitive analytics and AI.
               </p>
             </div>
-
             <div
               className="
                 w-full rounded-[2rem]
@@ -470,7 +473,7 @@ export default function LandingPage() {
                 dark:shadow-emerald-950/50
               "
             >
-              <div className="overflow-hidden rounded-[1.5rem] border border-zinc-200/80 bg-white dark:border-white/10 dark:bg-zinc-900">
+              <div className="overflow-hidden rounded-[1.5rem] bg-white dark:bg-zinc-900">
                 <Image
                   src="/images/demo.png"
                   alt="Monetra dashboard demo"
@@ -481,6 +484,7 @@ export default function LandingPage() {
                 />
               </div>
             </div>
+
           </div>
         </section>
 
