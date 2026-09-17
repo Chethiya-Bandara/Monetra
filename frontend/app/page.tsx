@@ -141,23 +141,6 @@ export default function LandingPage() {
               },
             }
           );
-
-          gsap.fromTo(
-            footerRef.current,
-            { autoAlpha: 0, y: 16 },
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.6,
-              ease: "power2.out",
-              clearProps: "opacity,visibility,transform",
-              scrollTrigger: {
-                trigger: footerRef.current,
-                start: "top 95%",
-                once: true,
-              },
-            }
-          );
         }
       );
 
@@ -179,15 +162,14 @@ export default function LandingPage() {
       <header ref={navRef} className="fixed top-0 left-0 right-0 z-50 bg-emerald-950/30 backdrop-blur-md border-b border-white/10">
         <nav className="flex items-center justify-between px-8 py-5 max-w-7xl mx-auto w-full">
 
-          {/* Logo */}
           <Link href="/" className="landing-nav-item flex items-center gap-2">
             <div className="bg-emerald-950/30 p-2 rounded-xl backdrop-blur-md">
               <Image
-                              src="/images/logo.jpg"
-                              alt="Monetra"
-                              width={40}
-                              height={40}
-                              className="object-contain"
+                src="/images/logo.jpg"
+                alt="Monetra"
+                width={40}
+                height={40}
+                className="object-contain"
               />
             </div>
 
@@ -196,7 +178,6 @@ export default function LandingPage() {
             </span>
           </Link>
 
-          {/* Login */}
           <Link
             href="/login"
             className="landing-nav-item px-6 py-2.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-bold shadow-sm hover:bg-white/20 hover:scale-105 transition-all"
@@ -207,10 +188,8 @@ export default function LandingPage() {
         </nav>
       </header>
 
-      {/* Main content */}
       <div className="relative z-10">
 
-        {/* Hero */}
         <section className="px-6 pt-40 pb-32 text-center max-w-5xl mx-auto">
 
           <h1 ref={heroHeadingRef} className="text-4xl md:text-8xl font-extrabold text-white tracking-tighter mb-8 leading-[0.9] drop-shadow-lg">
@@ -238,7 +217,6 @@ export default function LandingPage() {
         {/* Features */}
         <section ref={featuresRef} className="bg-white dark:bg-zinc-950">
           <div className="max-w-7xl mx-auto px-6 py-24">
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {features.map((feature, i) => (
                 <div
@@ -265,8 +243,69 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer ref={footerRef} className="bg-zinc-950 py-12 text-center text-slate-400 text-sm">
+        <section className="relative isolate overflow-hidden bg-white py-24 sm:py-32 dark:bg-zinc-950">
+          <div
+            className="
+              absolute inset-0 -z-10
+              bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.18),_rgba(236,253,245,0.45)_35%,_transparent_70%)]
+              dark:bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.16),_transparent_55%)]
+            "
+          />
+          <div
+            className="
+              absolute inset-x-0 bottom-0 -z-10 h-1/2
+              bg-gradient-to-t from-emerald-50/70 to-transparent
+              dark:from-emerald-950/10
+            "
+          />
+          <div
+            className="
+              absolute inset-x-0 top-0 -z-10 h-px
+              bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent
+              dark:via-emerald-400/50
+            "
+          />
+
+          <div className="mx-auto flex w-full max-w-7xl flex-col items-center px-4 md:px-8 lg:px-12">
+            <div className="mb-12 max-w-3xl text-center">
+              <h2 className="mt-6 text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl dark:text-white">
+                Clarity in every transaction.
+              </h2>
+
+              <p className="mt-5 text-lg leading-relaxed text-zinc-600 sm:text-xl dark:text-zinc-300">
+                Bring your finances together, uncover spending patterns, and gain
+                smarter insights with intuitive analytics and AI.
+              </p>
+            </div>
+
+            <div
+              className="
+                w-full rounded-[2rem]
+                border border-emerald-900/10
+                bg-white/60 p-2
+                shadow-2xl shadow-emerald-900/10
+                backdrop-blur-sm
+                sm:p-3
+                dark:border-white/10
+                dark:bg-white/5
+                dark:shadow-emerald-950/50
+              "
+            >
+              <div className="overflow-hidden rounded-[1.5rem] border border-zinc-200/80 bg-white dark:border-white/10 dark:bg-zinc-900">
+                <Image
+                  src="/images/demo.png"
+                  alt="Monetra dashboard demo"
+                  width={1920}
+                  height={1080}
+                  className="h-auto w-full object-contain"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <footer className="bg-zinc-100 dark:bg-zinc-950 py-12 text-center text-slate-900 dark:text-slate-400 text-sm">
           © 2026 Monetra. Personal finance tracking that is secure, private,
           and intelligent.
         </footer>
