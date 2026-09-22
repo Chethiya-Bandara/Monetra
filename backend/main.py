@@ -6,9 +6,8 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from fastapi.middleware.cors import CORSMiddleware
-from database import supabase
 from schemas import TransactionBase, RecurringTransactionBase
-from auth import get_current_user
+from auth import get_authenticated_supabase_client, get_current_user
 from pydantic import BaseModel, ConfigDict, Field
 from supabase import create_client, Client
 import google.generativeai as genai
@@ -34,7 +33,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-supabase: Client = create_client(
+auth_client: Client = create_client(
     os.environ.get("SUPABASE_URL"),
     os.environ.get("SUPABASE_KEY")
 )
@@ -46,13 +45,22 @@ async def get_session(request: Request, user_id: str = Depends(get_current_user)
 
 @app.get("/transactions")
 @limiter.limit("60/minute")
-async def get_transactions(request: Request, user_id: str = Depends(get_current_user)):
+async def get_transactions(
+    request: Request,
+    user_id: str = Depends(get_current_user),
+    supabase: Client = Depends(get_authenticated_supabase_client),
+):
     response = supabase.table("transactions").select("*").eq("user_id", user_id).execute()
     return response.data
 
 @app.post("/transactions")
 @limiter.limit("30/minute")
-async def create_transaction(request: Request, transaction: TransactionBase, user_id: str = Depends(get_current_user)):
+async def create_transaction(
+    request: Request,
+    transaction: TransactionBase,
+    user_id: str = Depends(get_current_user),
+    supabase: Client = Depends(get_authenticated_supabase_client),
+):
     transaction_data = {
         "user_id": user_id,
         "amount": transaction.amount,
@@ -71,7 +79,12 @@ async def create_transaction(request: Request, transaction: TransactionBase, use
 
 @app.delete("/transactions/{id}")
 @limiter.limit("30/minute")
-async def delete_transaction(request: Request, id: str, user_id: str = Depends(get_current_user)):
+async def delete_transaction(
+    request: Request,
+    id: str,
+    user_id: str = Depends(get_current_user),
+    supabase: Client = Depends(get_authenticated_supabase_client),
+):
     supabase.table("transactions").delete().eq("id", id).eq("user_id", user_id).execute()
     return {"status": "success"}
 
@@ -84,7 +97,7 @@ class RegisterRequest(BaseModel):
 @app.post("/register")
 @limiter.limit("3/minute")
 async def register(request: Request, user_data: RegisterRequest):
-    response = supabase.auth.sign_up({
+    response = auth_client.auth.sign_up({
         "email": user_data.email,
         "password": user_data.password,
         "options": {
@@ -113,7 +126,7 @@ class LoginRequest(BaseModel):
 async def login(request: Request, credentials: LoginRequest):
     try:
         # Sign in with Supabase
-        response = supabase.auth.sign_in_with_password({
+        response = auth_client.auth.sign_in_with_password({
             "email": credentials.email,
             "password": credentials.password
         })
@@ -143,7 +156,8 @@ class ChatRequest(BaseModel):
 async def chat_with_ai(
     request: Request,
     chat_request: ChatRequest,
-    user_id: str = Depends(get_current_user)
+    user_id: str = Depends(get_current_user),
+    supabase: Client = Depends(get_authenticated_supabase_client),
 ):
     try:
         response = (
@@ -203,7 +217,12 @@ async def chat_with_ai(
     
 @app.post("/recurring-transactions")
 @limiter.limit("30/minute")
-async def create_recurring(request: Request, transaction: RecurringTransactionBase, user_id: str = Depends(get_current_user)):
+async def create_recurring(
+    request: Request,
+    transaction: RecurringTransactionBase,
+    user_id: str = Depends(get_current_user),
+    supabase: Client = Depends(get_authenticated_supabase_client),
+):
     data = {
         "user_id": user_id,
         "amount": transaction.amount,
@@ -225,7 +244,8 @@ async def create_recurring(request: Request, transaction: RecurringTransactionBa
 @limiter.limit("60/minute")
 async def get_recurring_transactions(
     request: Request,
-    user_id: str = Depends(get_current_user)
+    user_id: str = Depends(get_current_user),
+    supabase: Client = Depends(get_authenticated_supabase_client),
 ):
     try:
         response = (
@@ -252,7 +272,8 @@ async def update_recurring_transaction(
     request: Request,
     id: str,
     transaction: RecurringTransactionBase,
-    user_id: str = Depends(get_current_user)
+    user_id: str = Depends(get_current_user),
+    supabase: Client = Depends(get_authenticated_supabase_client),
 ):
     data = {
         "amount": transaction.amount,
@@ -298,7 +319,8 @@ async def update_recurring_transaction(
 async def delete_recurring_transaction(
     request: Request,
     id: str,
-    user_id: str = Depends(get_current_user)
+    user_id: str = Depends(get_current_user),
+    supabase: Client = Depends(get_authenticated_supabase_client),
 ):
     try:
         response = (

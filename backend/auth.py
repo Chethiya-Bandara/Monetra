@@ -1,9 +1,11 @@
 import os
-from fastapi import HTTPException, Security
+from dotenv import load_dotenv
+from fastapi import Depends, HTTPException, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from supabase import create_client, Client
+from supabase import Client, ClientOptions, create_client
 
 security = HTTPBearer()
+load_dotenv()
 
 supabase: Client = create_client(
     os.environ.get("SUPABASE_URL"),
@@ -34,3 +36,19 @@ def get_current_user(
             status_code=401,
             detail="Authentication failed"
         )
+
+
+def get_authenticated_supabase_client(
+    token: HTTPAuthorizationCredentials = Security(security),
+    _user_id: str = Depends(get_current_user),
+) -> Client:
+    """Create an isolated PostgREST client bound to the current request JWT."""
+    return create_client(
+        os.environ.get("SUPABASE_URL"),
+        os.environ.get("SUPABASE_KEY"),
+        options=ClientOptions(
+            headers={"Authorization": f"Bearer {token.credentials}"},
+            auto_refresh_token=False,
+            persist_session=False,
+        ),
+    )
