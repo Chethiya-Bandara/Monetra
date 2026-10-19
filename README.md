@@ -38,6 +38,12 @@ Supported frequencies:
 
 Recurring transactions can also include optional end dates and can be edited or deleted at any time.
 
+### 🎯 Monthly Budgets
+
+Set, update, and remove a monthly spending limit for each transaction category. Budget progress compares the limit with recorded expenses for the current calendar month. Limits repeat monthly; future recurring payments are included only when recorded as transactions.
+
+Before using budgets, run [the budgets migration](backend/migrations/001_budgets.sql) in the Supabase SQL editor. It creates the user-scoped `category_budgets` table and its row-level security policy. The existing `budgets` table stores separate month/year limits and is not modified. A user must have a matching `profile` row, as required by the existing schema.
+
 ### 📊 Financial Analytics
 
 Monetra transforms transaction history into visual insights including:
@@ -401,6 +407,14 @@ Authorization: Bearer <Supabase access token>
 | `PUT` | `/recurring-transactions/{id}` | Update an owned recurring transaction |
 | `DELETE` | `/recurring-transactions/{id}` | Delete an owned recurring transaction |
 
+### Budgets
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/budgets` | Retrieve owned category budgets |
+| `PUT` | `/budgets` | Create or update a category limit |
+| `DELETE` | `/budgets/{id}` | Delete an owned budget |
+
 ### AI
 
 | Method | Endpoint | Description |
@@ -633,7 +647,6 @@ Before deploying Monetra:
 
 Potential areas for continued development include:
 
-- Budget creation and category limits
 - Financial goals and progress tracking
 - Transaction search and filtering
 - CSV import and export

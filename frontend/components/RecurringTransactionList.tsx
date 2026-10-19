@@ -19,9 +19,9 @@ interface RecurringTransaction {
   id: string;
   amount: number;
   type: "income" | "expense";
-  frequency: string;
+  frequency: "daily" | "weekly" | "monthly";
   category: string;
-  description: string;
+  description?: string;
   start_date: string;
   end_date?: string | null;
 }
@@ -56,7 +56,7 @@ export default function RecurringTransactionList({
     description: string;
     amount: string;
     type: "income" | "expense";
-    frequency: string;
+    frequency: "daily" | "weekly" | "monthly";
     category: string;
     start_date: string;
     end_date: string;
@@ -225,13 +225,13 @@ export default function RecurringTransactionList({
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-950 shadow-sm overflow-hidden">
+    <div className="dashboard-panel bg-white dark:bg-[#0d3329] rounded-2xl border border-slate-200 dark:border-[#1c4a3b] shadow-sm overflow-hidden">
 
       {/* Header */}
-      <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+      <div className="p-6 border-b border-slate-200 dark:border-[#1c4a3b] flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <RefreshCw className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <RefreshCw className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
 
             <h3 className="text-lg font-bold text-slate-800 dark:text-white">
               Recurring Transactions
@@ -243,7 +243,7 @@ export default function RecurringTransactionList({
           </p>
         </div>
 
-        <span className="px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-semibold">
+        <span className="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
           {transactions.length}{" "}
           {transactions.length === 1 ? "item" : "items"}
         </span>
@@ -292,7 +292,7 @@ export default function RecurringTransactionList({
                             description: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2.5 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/50"
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#16473a] px-4 py-2.5 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50"
                       />
                     </div>
 
@@ -312,7 +312,7 @@ export default function RecurringTransactionList({
                             amount: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2.5 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/50"
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#16473a] px-4 py-2.5 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50"
                       />
                     </div>
 
@@ -330,7 +330,7 @@ export default function RecurringTransactionList({
                             type: e.target.value as "income" | "expense",
                           })
                         }
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2.5 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/50"
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#16473a] px-4 py-2.5 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50"
                       >
                         <option value="expense">Expense</option>
                         <option value="income">Income</option>
@@ -352,7 +352,7 @@ export default function RecurringTransactionList({
                               category: e.target.value,
                             })
                           }
-                          className="w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2.5 pr-10 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/50"
+                          className="w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#16473a] px-4 py-2.5 pr-10 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50"
                         >
                           {CATEGORIES.map((category) => (
                             <option key={category} value={category}>
@@ -376,10 +376,10 @@ export default function RecurringTransactionList({
                         onChange={(e) =>
                           setEditData({
                             ...editData,
-                            frequency: e.target.value,
+                            frequency: e.target.value as "daily" | "weekly" | "monthly",
                           })
                         }
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2.5 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/50 capitalize"
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#16473a] px-4 py-2.5 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50 capitalize"
                       >
                         {FREQUENCIES.map((frequency) => (
                           <option key={frequency} value={frequency}>
@@ -404,7 +404,7 @@ export default function RecurringTransactionList({
                             start_date: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2.5 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/50"
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#16473a] px-4 py-2.5 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50"
                       />
                     </div>
 
@@ -423,7 +423,7 @@ export default function RecurringTransactionList({
                             end_date: e.target.value,
                           })
                         }
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2.5 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/50"
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#16473a] px-4 py-2.5 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50"
                       />
                     </div>
 
@@ -436,7 +436,7 @@ export default function RecurringTransactionList({
                       type="button"
                       onClick={cancelEditing}
                       disabled={savingId === transaction.id}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-[#16473a] hover:bg-slate-200 dark:hover:bg-slate-700 transition"
                     >
                       <X className="w-4 h-4" />
                       Cancel
@@ -446,7 +446,7 @@ export default function RecurringTransactionList({
                       type="button"
                       onClick={() => saveEdit(transaction.id)}
                       disabled={savingId === transaction.id}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white transition disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white transition disabled:opacity-50"
                     >
                       {savingId === transaction.id ? (
                         <>
@@ -544,7 +544,7 @@ export default function RecurringTransactionList({
                     <button
                       type="button"
                       onClick={() => startEditing(transaction)}
-                      className="p-2 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition"
+                      className="p-2 rounded-lg text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition"
                       title="Edit recurring transaction"
                       aria-label="Edit recurring transaction"
                     >
@@ -587,3 +587,4 @@ export default function RecurringTransactionList({
     </div>
   );
 }
+

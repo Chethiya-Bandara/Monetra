@@ -9,14 +9,13 @@ import SummaryCards from "../../../components/SummaryCards";
 import TransactionForm from "../../../components/TransactionForm";
 import TransactionList from "../../../components/TransactionList";
 import FinancialInsights from "../../../components/FinancialInsights";
-import ChatBot from "../../../components/ChatBot";
-import { Wallet, LogOut, Loader2 } from "lucide-react"; 
+import { LayoutDashboard, LogOut, BarChart3, ArrowUpRight, CircleDollarSign } from "lucide-react"; 
 import { ThemeToggle } from "../../../components/ThemeToggle";
 import Link from "next/link";
-import { BarChart3 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 import Image from "next/image";
 import { apiUrl } from "@/lib/api";
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 interface RecurringTransaction {
   id: string;
@@ -93,7 +92,6 @@ export default function Home() {
   const [recurringTransactions, setRecurringTransactions] = useState<
     RecurringTransaction[]
   >([]);
-  const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("there");
 
   useEffect(() => {
@@ -144,8 +142,6 @@ export default function Home() {
       } catch (err) {
         console.error("Failed to fetch:", err);
 
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -344,123 +340,103 @@ export default function Home() {
       .reduce((acc, t) => acc + Number(t.amount), 0) + recurringTotals.expense;
   const totalBalance = income - expense;
 
+  const recentFlow = useMemo(() => Array.from({ length: 7 }, (_, index) => {
+    const day = new Date();
+    day.setHours(0, 0, 0, 0);
+    day.setDate(day.getDate() - (6 - index));
+    const nextDay = new Date(day);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const totals = transactions.reduce((result, transaction) => {
+      const date = new Date(transaction.date);
+      if (date >= day && date < nextDay) result[transaction.type] += Number(transaction.amount);
+      return result;
+    }, { income: 0, expense: 0 });
+    return { name: day.toLocaleDateString("en-US", { weekday: "short" }), ...totals };
+  }), [transactions]);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     router.push("/");
   };
 
-  if (loading) {
-    return (
-      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f4f7f6] dark:bg-zinc-950">
-
-        <div className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-400/10 blur-3xl dark:bg-emerald-500/10" />
-        <div className="relative flex flex-col items-center">
-          <div className="relative mb-6">
-            <div className="absolute inset-0 rounded-2xl bg-emerald-500/20 blur-xl animate-pulse" />
-          </div>
-          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-            Loading...
-          </p>
-          <div className="mt-6 flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-500 [animation-delay:-0.3s]" />
-            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-500 [animation-delay:-0.15s]" />
-            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-500" />
-          </div>
-
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <main className="min-h-screen bg-[#edf7f2] pb-12 font-sans text-slate-900 transition-colors dark:bg-zinc-950 dark:text-slate-100">
-      <header className="sticky top-0 z-10 border-b border-emerald-200/80 bg-white/80 backdrop-blur-xl dark:border-emerald-900 dark:bg-emerald-950/80">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-slate-100 p-2 rounded-lg shadow-lg shadow-emerald-500/20">
-              <Image
-                src="/images/logo.jpg"
-                alt="Monetra"
-                width={40}
-                height={40}
-                className="object-contain"
-              />
-            </div>
-            <h1 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">Monetra</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Link href="/dashboard/charts">
-              <button className="flex items-center gap-2 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-xl hover:shadow-md transition-all text-sm">
-                <BarChart3 className="w-5 h-5 text-emerald-600" />
-                <span>View Analytics</span>
-              </button>
-            </Link>
-            <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-rose-600 transition-all text-sm font-medium">
-              <LogOut className="w-4 h-4" /> Logout
-            </button>
-          </div>
+    <main className="dashboard-shell">
+      <aside className="dashboard-sidebar">
+        <div className="dashboard-brand">
+          <Image src="/images/logo.jpg" alt="Monetra" width={42} height={42} className="dashboard-logo" />
+          <span>Monetra</span>
         </div>
-      </header>
+        <nav className="dashboard-nav" aria-label="Dashboard navigation">
+          <a href="#overview" className="dashboard-nav-active"><LayoutDashboard size={19} /> Dashboard</a>
+          <Link href="/dashboard/charts"><BarChart3 size={19} /> View Analytics</Link>
+          <Link href="/dashboard/budgets"><CircleDollarSign size={19} /> Budgets</Link>
+        </nav>
+        <div className="dashboard-sidebar-bottom">
+          <p>PERSONAL FINANCE MANAGER</p>
+          <strong>A clearer view of your money.</strong>
+          <span>Track your progress, one transaction at a time.</span>
+        </div>
+      </aside>
 
-      <div className="mx-auto mt-8 max-w-7xl px-6">
-        <div className="relative overflow-hidden rounded-3xl border border-emerald-800/20 bg-emerald-900 px-7 py-10 text-white shadow-xl shadow-emerald-950/15 md:px-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(110,231,183,0.25),_transparent_35%)]" />
-          <div className="relative">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-emerald-300">Personal finance dashboard</p>
-            <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Hello, {userName}!</h1>
-            <p className="mt-3 max-w-2xl text-lg text-emerald-50/80">Get started by tracking your finances and taking control of your money.</p>
+      <div className="dashboard-content" id="overview">
+        <header className="dashboard-header">
+          <div>
+            <p className="dashboard-eyebrow">YOUR FINANCIAL OVERVIEW</p>
+            <h1>Hello, {userName}!</h1>
+            <p>Get started by tracking your finances and taking control of your money.</p>
           </div>
-        </div>
-      </div>
-      <div className="mx-auto mt-8 max-w-7xl px-6">
-        <div className="flex-1 space-y-8">
+          <div className="dashboard-actions">
+            <ThemeToggle />
+            <Link href="/dashboard/charts" className="dashboard-analytics">View Analytics <ArrowUpRight size={16} /></Link>
+            <button onClick={handleLogout} className="dashboard-logout"><LogOut size={17} /> Logout</button>
+          </div>
+        </header>
+
+        <section className="dashboard-section" aria-label="Financial overview">
+          <div className="dashboard-section-heading"><div><p className="dashboard-eyebrow">AT A GLANCE</p><h2>Overview</h2></div><span>Your finances, all in one place</span></div>
           <SummaryCards balance={totalBalance} income={income} expense={expense} />
-          <div className="grid items-start gap-8 xl:grid-cols-3 xl:items-stretch">
-            <div className="xl:col-span-1 xl:h-full"><TransactionForm onAdd={handleAdd} /></div>
-            <div className="xl:col-span-2 xl:h-full"><TransactionList transactions={transactions} onDelete={handleDelete} /></div>
-          </div>
-          <RecurringTransactionList
+        </section>
+
+        <div className="dashboard-grid">
+          <section className="dashboard-flow dashboard-panel" aria-label="Last 7 Days">
+            <div className="dashboard-flow-header">
+              <div><h2>Last 7 Days</h2><p>Daily income and expense activity</p></div>
+              <Link href="/dashboard/charts" className="dashboard-flow-link">View Analytics <ArrowUpRight size={15} /></Link>
+            </div>
+            <div className="dashboard-flow-chart">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={recentFlow} margin={{ top: 12, right: 8, left: 0, bottom: 0 }}>
+                  <defs><linearGradient id="dashboardIncome" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#21d39a" stopOpacity={0.25} /><stop offset="95%" stopColor="#21d39a" stopOpacity={0} /></linearGradient></defs>
+                  <CartesianGrid vertical={false} stroke="var(--dash-border)" strokeDasharray="3 5" />
+                  <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fill: "var(--dash-muted)", fontSize: 11 }} />
+                  <YAxis tickLine={false} axisLine={false} width={45} tick={{ fill: "var(--dash-muted)", fontSize: 11 }} />
+                  <Tooltip contentStyle={{ background: "var(--dash-panel)", border: "1px solid var(--dash-border)", borderRadius: 10, color: "var(--dash-text)" }} />
+                  <Area type="monotone" dataKey="income" name="Income" stroke="#21c992" fill="url(#dashboardIncome)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="expense" name="Expenses" stroke="#f08073" fill="none" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
+          <div className="dashboard-activity"><TransactionList transactions={transactions} onDelete={handleDelete} /></div>
+          <div className="dashboard-form"><TransactionForm onAdd={handleAdd} /></div>
+          <div className="dashboard-recurring"><RecurringTransactionList
             transactions={recurringTransactions}
             onUpdate={(updatedTransaction) => {
-              setRecurringTransactions((prev) =>
-                prev.map((transaction) =>
-                  transaction.id === updatedTransaction.id
-                    ? updatedTransaction
-                    : transaction
-                )
-              );
+              setRecurringTransactions((prev) => prev.map((transaction) => transaction.id === updatedTransaction.id ? updatedTransaction : transaction));
             }}
             onDelete={(id) => {
-              setRecurringTransactions((prev) =>
-                prev.filter((transaction) => transaction.id !== id)
-              );
+              setRecurringTransactions((prev) => prev.filter((transaction) => transaction.id !== id));
             }}
-          />
-          <FinancialInsights />
+          /></div>
+          <div className="dashboard-insights"><FinancialInsights /></div>
         </div>
+        <ChatBotPopup />
+        <footer className="dashboard-footer">
+          <span>© 2026 Monetra · Personal Finance Manager</span>
+          <Link href="/privacy">Privacy Policy</Link>
+          <span>Built with Next.js, FastAPI &amp; Supabase</span>
+        </footer>
       </div>
-      <ChatBotPopup />
-      <footer className="mt-12 border-t border-emerald-200 dark:border-emerald-900 py-6">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <div className="flex justify-center gap-4 mb-2">
-            <Link
-              href="/privacy"
-              className="text-sm text-slate-500 transition-colors hover:text-emerald-700 dark:text-slate-400 dark:hover:text-emerald-400"
-            >
-              Privacy Policy
-            </Link>
-          </div>
-
-          <p className="text-xs text-slate-400 dark:text-slate-500">
-            © 2026 Monetra · Personal Finance Manager
-          </p>
-
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-            Built with Next.js, FastAPI & Supabase
-          </p>
-        </div>
-      </footer>
     </main>
   );
 }

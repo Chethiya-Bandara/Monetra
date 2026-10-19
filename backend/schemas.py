@@ -41,3 +41,9 @@ class RecurringTransactionBase(BaseModel):
 class RecurringTransaction(RecurringTransactionBase):
     id: str
     user_id: str
+
+
+class BudgetBase(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    category: Literal["Food", "Transport", "Entertainment", "Health", "Utilities", "General"]
+    amount: float = Field(gt=0, le=10_000_000, allow_inf_nan=False)

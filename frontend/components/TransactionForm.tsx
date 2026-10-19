@@ -43,7 +43,7 @@ export default function TransactionForm({ onAdd }: any) {
   };
 
   return (
-    <div className="h-full bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-zinc-950 transition-all">
+    <div className="dashboard-panel h-full bg-white dark:bg-[#0d3329] p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-[#1c4a3b] transition-all">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-slate-800 dark:text-white">New Transaction</h3>
         
@@ -63,7 +63,7 @@ export default function TransactionForm({ onAdd }: any) {
       </div>
 
       <form onSubmit={submit} className="space-y-5">
-        <div className="flex p-1 bg-slate-100 dark:bg-zinc-800 rounded-xl">
+        <div className="flex p-1 bg-slate-100 dark:bg-[#16473a] rounded-xl">
           {(['expense', 'income'] as const).map((t) => (
             <button 
               key={t} 
@@ -86,7 +86,7 @@ export default function TransactionForm({ onAdd }: any) {
             value={text} 
             onChange={e => setText(e.target.value)} 
             placeholder="Description (e.g., Rent, Netflix)" 
-            className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-zinc-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all" 
+            className="w-full rounded-xl border border-slate-200 dark:border-[#1c4a3b] bg-slate-50 dark:bg-[#16473a] px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all" 
             required 
           />
 
@@ -95,7 +95,7 @@ export default function TransactionForm({ onAdd }: any) {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-zinc-800 px-4 py-3 pr-10 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all cursor-pointer"
+                  className="w-full appearance-none rounded-xl border border-slate-200 dark:border-[#1c4a3b] bg-slate-50 dark:bg-[#16473a] px-4 py-3 pr-10 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all cursor-pointer"
                   required
                 >
                   {CATEGORIES.map((cat) => (
@@ -113,14 +113,14 @@ export default function TransactionForm({ onAdd }: any) {
                 value={amount} 
                 onChange={e => setAmount(e.target.value)} 
                 placeholder="0.00 (LKR)" 
-                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-zinc-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all font-mono" 
+                className="w-full rounded-xl border border-slate-200 dark:border-[#1c4a3b] bg-slate-50 dark:bg-[#16473a] px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all font-mono" 
                 required 
               />
           </div>
 
           {/* Conditional Recurring Fields */}
           {isRecurring && (
-            <div className="p-4 bg-emerald-50/50 dark:bg-emerald-500/5 rounded-xl border border-indigo-100/50 dark:border-indigo-500/10 space-y-4 animate-in fade-in slide-in-from-top-2">
+            <div className="p-4 bg-emerald-50/50 dark:bg-emerald-500/5 rounded-xl border border-emerald-100/50 dark:border-indigo-500/10 space-y-4 animate-in fade-in slide-in-from-top-2">
               <div>
                 <label className="text-[10px] uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400 mb-2 block">Frequency</label>
                 <div className="flex gap-2">
@@ -148,7 +148,7 @@ export default function TransactionForm({ onAdd }: any) {
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full rounded-lg border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2 text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full rounded-lg border border-slate-200 dark:border-zinc-700 bg-white dark:bg-[#16473a] px-4 py-2 text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50"
                   />
                   <Calendar className="absolute right-3 top-2.5 w-4 h-4 text-slate-400 pointer-events-none" />
                 </div>

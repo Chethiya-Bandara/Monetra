@@ -56,11 +56,11 @@ export default function FinancialInsights() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-800/50 dark:to-emerald-900 p-6 rounded-2xl border border-indigo-100 dark:border-zinc-950 shadow-sm transition-all">
+    <div className="dashboard-panel bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-800/50 dark:to-emerald-900 p-6 rounded-2xl border border-emerald-100 dark:border-[#1c4a3b] shadow-sm transition-all">
       
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+          <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
 
           <h3 className="font-bold text-slate-800 dark:text-white">
             Monetra AI Insights
@@ -70,7 +70,7 @@ export default function FinancialInsights() {
 
       {!insight && !loading && (
         <div className="flex flex-col items-center justify-center py-6 text-center">
-          <Sparkles className="w-8 h-8 text-indigo-500 dark:text-indigo-400 mb-3" />
+          <Sparkles className="w-8 h-8 text-indigo-500 dark:text-emerald-400 mb-3" />
 
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
             Get personalized insights about your spending habits.

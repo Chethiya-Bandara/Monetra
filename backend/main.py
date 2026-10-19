@@ -6,7 +6,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from fastapi.middleware.cors import CORSMiddleware
-from schemas import TransactionBase, RecurringTransactionBase
+from schemas import TransactionBase, RecurringTransactionBase, BudgetBase
 from auth import get_authenticated_supabase_client, get_current_user
 from pydantic import BaseModel, ConfigDict, Field
 from supabase import create_client, Client
@@ -87,6 +87,59 @@ async def delete_transaction(
 ):
     supabase.table("transactions").delete().eq("id", id).eq("user_id", user_id).execute()
     return {"status": "success"}
+
+@app.get("/budgets")
+@limiter.limit("60/minute")
+async def get_budgets(
+    request: Request,
+    user_id: str = Depends(get_current_user),
+    supabase: Client = Depends(get_authenticated_supabase_client),
+):
+    try:
+        return supabase.table("category_budgets").select("*").eq("user_id", user_id).execute().data
+    except Exception:
+        logger.exception("Failed to load budgets")
+        raise HTTPException(status_code=500, detail="Unable to load budgets.")
+
+
+@app.put("/budgets")
+@limiter.limit("30/minute")
+async def save_budget(
+    request: Request,
+    budget: BudgetBase,
+    user_id: str = Depends(get_current_user),
+    supabase: Client = Depends(get_authenticated_supabase_client),
+):
+    try:
+        response = supabase.table("category_budgets").upsert(
+            {"user_id": user_id, "category": budget.category, "amount": budget.amount},
+            on_conflict="user_id,category",
+        ).execute()
+        return response.data[0]
+    except Exception:
+        logger.exception("Failed to save budget")
+        raise HTTPException(status_code=500, detail="Unable to save budget.")
+
+
+@app.delete("/budgets/{id}")
+@limiter.limit("30/minute")
+async def delete_budget(
+    request: Request,
+    id: str,
+    user_id: str = Depends(get_current_user),
+    supabase: Client = Depends(get_authenticated_supabase_client),
+):
+    try:
+        response = supabase.table("category_budgets").delete().eq("id", id).eq("user_id", user_id).execute()
+        if not response.data:
+            raise HTTPException(status_code=404, detail="Budget not found.")
+        return {"status": "success"}
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Failed to delete budget")
+        raise HTTPException(status_code=500, detail="Unable to delete budget.")
+
 
 class RegisterRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")

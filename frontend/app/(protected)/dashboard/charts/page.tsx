@@ -4,7 +4,9 @@ import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
-  Loader2,
+  LayoutDashboard,
+  BarChart3,
+  CircleDollarSign,
   TrendingUp,
   TrendingDown,
   Wallet,
@@ -56,7 +58,6 @@ export default function ChartsPage() {
   };
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
 
   const COLORS = [
     "#ff0000",
@@ -86,8 +87,6 @@ export default function ChartsPage() {
         setTransactions(data);
       } catch (err) {
         console.error("Fetch error:", err);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -132,7 +131,7 @@ export default function ChartsPage() {
       : 0;
 
   const weeklyFlowData = useMemo(() => {
-    const days = [];
+    const days: { date: Date; name: string; income: number; expense: number }[] = [];
 
     for (let i = 6; i >= 0; i--) {
       const date = new Date();
@@ -271,7 +270,7 @@ export default function ChartsPage() {
   }, [transactions]);
 
   const spendingTrendData = useMemo(() => {
-    const days = [];
+    const days: { date: Date; name: string; expense: number }[] = [];
 
     for (let i = 29; i >= 0; i--) {
       const date = new Date();
@@ -388,103 +387,45 @@ export default function ChartsPage() {
     averageExpense,
   ]);
 
-  if (loading) {
-    return (
-      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f4f7f6] dark:bg-zinc-950">
-
-        <div className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-400/10 blur-3xl dark:bg-emerald-500/10" />
-        <div className="relative flex flex-col items-center">
-          <div className="relative mb-6">
-            <div className="absolute inset-0 rounded-2xl bg-emerald-500/20 blur-xl animate-pulse" />
-          </div>
-          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-            Loading...
-          </p>
-          <div className="mt-6 flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-500 [animation-delay:-0.3s]" />
-            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-500 [animation-delay:-0.15s]" />
-            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-500" />
-          </div>
-
-        </div>
-      </div>
-    );
-  }
-
-
   return (
-    <main className="min-h-screen bg-[#edf7f2] pb-12 font-sans text-emerald-950 transition-colors dark:bg-zinc-950 dark:text-emerald-50">
-
-      {/* TOP NAVBAR */}
-      <header className="sticky top-0 z-10 border-b border-emerald-200/80 bg-white/80 backdrop-blur-xl dark:border-emerald-900 dark:bg-emerald-950/80">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-
-          <div className="flex items-center gap-3">
-            <div className="bg-slate-100 p-2 rounded-lg shadow-lg shadow-emerald-500/20">
-              <Image
-                src="/images/logo.jpg"
-                alt="Monetra"
-                width={40}
-                height={40}
-                className="object-contain"
-              />
-            </div>
-
-            <h1 className="text-xl font-bold text-emerald-900 dark:text-white tracking-tight">
-              Monetra
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-4">
-
-            <ThemeToggle />
-
-            <Link href="/dashboard/">
-              <button className="flex items-center gap-2 bg-white dark:bg-emerald-900 border border-emerald-200 dark:border-emerald-800 px-4 py-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-800 hover:shadow-md transition-all text-sm">
-                <ArrowLeft className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                <span>Back to Dashboard</span>
-              </button>
-            </Link>
-
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900 hover:text-rose-600 transition-all text-sm font-medium"
-            >
-              <LogOut className="w-4 h-4" />
-              Logout
-            </button>
-
-          </div>
+    <main className="dashboard-shell analytics-shell">
+      <aside className="dashboard-sidebar">
+        <div className="dashboard-brand">
+          <Image src="/images/logo.jpg" alt="Monetra" width={42} height={42} className="dashboard-logo" />
+          <span>Monetra</span>
         </div>
-      </header>
-
-      <div className="min-h-screen bg-gradient-to-b from-emerald-100/50 via-[#edf7f2] to-[#edf7f2] p-4 dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-950 md:p-8">
-
-        <div className="max-w-6xl mx-auto space-y-8">
-
-          {/* HEADER */}
-          <div className="relative overflow-hidden rounded-3xl border border-emerald-800/20 bg-emerald-900 px-7 py-9 text-white shadow-xl shadow-emerald-950/15 sm:flex sm:flex-row sm:items-center sm:gap-4 md:px-10">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(110,231,183,0.25),_transparent_35%)]" />
-
-            <div className="relative flex-1">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">Analytics overview</p>
-              <h1 className="text-3xl font-bold tracking-tight text-white">
-                Financial Analytics
-              </h1>
-
-              <p className="mt-2 text-sm text-emerald-50/80">
-                Understand your financial activity and spending patterns
-              </p>
-            </div>
-
+        <nav className="dashboard-nav" aria-label="Dashboard navigation">
+          <Link href="/dashboard"><LayoutDashboard size={19} /> Dashboard</Link>
+          <Link href="/dashboard/charts" className="dashboard-nav-active" aria-current="page"><BarChart3 size={19} /> View Analytics</Link>
+          <Link href="/dashboard/budgets"><CircleDollarSign size={19} /> Budgets</Link>
+        </nav>
+        <div className="dashboard-sidebar-bottom">
+          <p>PERSONAL FINANCE MANAGER</p>
+          <strong>A clearer view of your money.</strong>
+          <span>Track your progress, one transaction at a time.</span>
+        </div>
+      </aside>
+      <div className="dashboard-content">
+        <header className="dashboard-header">
+          <div>
+            <p className="dashboard-eyebrow">ANALYTICS OVERVIEW</p>
+            <h1>Financial Analytics</h1>
+            <p>Understand your financial activity and spending patterns</p>
           </div>
-
+          <div className="dashboard-actions">
+            <ThemeToggle />
+            <Link href="/dashboard/" className="dashboard-analytics"><ArrowLeft size={16} /> Back to Dashboard</Link>
+            <button onClick={handleLogout} className="dashboard-logout"><LogOut size={17} /> Logout</button>
+          </div>
+        </header>
+        <div className="analytics-content space-y-6">
+          <div className="dashboard-section-heading"><div><p className="dashboard-eyebrow">AT A GLANCE</p><h2>Overview</h2></div><span>Your finances, all in one place</span></div>
           {/* SUMMARY CARDS */}
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <div className="analytics-summary grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
             {/* Income */}
-            <div className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm shadow-emerald-950/5 dark:border-emerald-900/50 dark:bg-slate-900">
+            <div className="analytics-panel rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm shadow-emerald-950/5 dark:border-emerald-900/50 dark:bg-slate-900">
 
               <div className="flex items-center justify-between">
 
@@ -505,7 +446,7 @@ export default function ChartsPage() {
             </div>
 
             {/* Expenses */}
-            <div className="rounded-2xl border border-rose-100 bg-white p-6 shadow-sm shadow-rose-950/5 dark:border-rose-900/50 dark:bg-slate-900">
+            <div className="analytics-panel rounded-2xl border border-rose-100 bg-white p-6 shadow-sm shadow-rose-950/5 dark:border-rose-900/50 dark:bg-slate-900">
 
               <div className="flex items-center justify-between">
 
@@ -526,7 +467,7 @@ export default function ChartsPage() {
             </div>
 
             {/* Balance */}
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-950/5 dark:border-slate-800 dark:bg-slate-900">
+            <div className="analytics-panel rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-950/5 dark:border-slate-800 dark:bg-slate-900">
 
               <div className="flex items-center justify-between">
 
@@ -547,7 +488,7 @@ export default function ChartsPage() {
             </div>
 
             {/* Savings */}
-            <div className="rounded-2xl border border-emerald-200 bg-emerald-600 p-6 text-white shadow-lg shadow-emerald-600/15 dark:border-emerald-700 dark:bg-emerald-900">
+            <div className="analytics-panel rounded-2xl border border-emerald-200 bg-emerald-600 p-6 text-white shadow-lg shadow-emerald-600/15 dark:border-emerald-700 dark:bg-emerald-900">
 
               <div className="flex items-center justify-between">
 
@@ -571,7 +512,7 @@ export default function ChartsPage() {
 
           {/* LAST 7 DAYS */}
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="analytics-panel rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 
             <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
               Last 7 Days
@@ -590,7 +531,7 @@ export default function ChartsPage() {
                   <CartesianGrid
                     strokeDasharray="3 3"
                     vertical={false}
-                    stroke="#d1fae5"
+                    stroke="var(--chart-grid)"
                   />
 
                   <XAxis
@@ -632,7 +573,7 @@ export default function ChartsPage() {
 
           {/* MONTHLY */}
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="analytics-panel rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 
             <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
               Monthly Income vs Expenses
@@ -685,11 +626,11 @@ export default function ChartsPage() {
 
           {/* CATEGORY + TOP EXPENSES */}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
             {/* Categories */}
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="analytics-panel rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 
               <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
                 Spending by Category
@@ -737,7 +678,7 @@ export default function ChartsPage() {
 
             {/* Top Expenses */}
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="analytics-panel rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 
               <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
                 Top 5 Expenses
@@ -804,7 +745,7 @@ export default function ChartsPage() {
 
           {/* NET BALANCE */}
 
-          <div className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm dark:border-emerald-900/50 dark:bg-slate-900">
+          <div className="analytics-panel rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm dark:border-emerald-900/50 dark:bg-slate-900">
 
             <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
               Net Balance Trajectory
@@ -876,7 +817,7 @@ export default function ChartsPage() {
 
           {/* 30 DAY TREND */}
 
-          <div className="rounded-2xl border border-rose-100 bg-white p-6 shadow-sm dark:border-rose-900/50 dark:bg-slate-900">
+          <div className="analytics-panel rounded-2xl border border-rose-100 bg-white p-6 shadow-sm dark:border-rose-900/50 dark:bg-slate-900">
 
             <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
               30-Day Spending Trend
@@ -922,11 +863,11 @@ export default function ChartsPage() {
 
           {/* WEEKDAY + STATISTICS */}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
             {/* Weekday */}
 
-            <div className="lg:col-span-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="analytics-panel lg:col-span-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 
               <h3 className="text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
                 Spending by Day of Week
@@ -970,7 +911,7 @@ export default function ChartsPage() {
 
             {/* Statistics */}
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="analytics-panel rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 
               <h3 className="text-lg font-semibold mb-6 text-emerald-900 dark:text-emerald-100">
                 Transaction Statistics
@@ -1022,7 +963,7 @@ export default function ChartsPage() {
 
           {/* FINANCIAL INSIGHTS */}
 
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-6 shadow-sm dark:border-emerald-900/60 dark:bg-zinc-900">
+          <div className="analytics-panel rounded-2xl border border-emerald-200 bg-emerald-50/70 p-6 shadow-sm dark:border-emerald-900/60 dark:bg-zinc-900">
 
             <h3 className="flex items-center gap-2 text-lg font-semibold mb-2 text-emerald-900 dark:text-emerald-100">
               <Sparkles className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
@@ -1051,9 +992,12 @@ export default function ChartsPage() {
           </div>
 
         </div>
-
+        <footer className="dashboard-footer">
+          <span>© 2026 Monetra · Personal Finance Manager</span>
+          <Link href="/privacy">Privacy Policy</Link>
+          <span>Built with Next.js, FastAPI &amp; Supabase</span>
+        </footer>
       </div>
-
     </main>
   );
 }

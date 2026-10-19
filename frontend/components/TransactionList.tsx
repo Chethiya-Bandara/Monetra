@@ -3,7 +3,7 @@ import { Trash2, TrendingDown, TrendingUp, ReceiptText } from "lucide-react";
 
 export default function TransactionList({ transactions, onDelete }: any) {
   return (
-    <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-zinc-950 h-full transition-colors">
+    <div className="dashboard-panel bg-white dark:bg-[#0d3329] p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-[#1c4a3b] h-full transition-colors">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-slate-800 dark:text-white">Recent Activity</h3>
         <span className="text-xs font-medium px-2 py-1 bg-emerald-100 dark:bg-emerald-800 text-slate-500 dark:text-slate-400 rounded-md">
@@ -13,7 +13,7 @@ export default function TransactionList({ transactions, onDelete }: any) {
 
       {transactions.length === 0 ? (
         <div className="text-center py-20">
-          <div className="bg-slate-50 dark:bg-slate-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="bg-slate-50 dark:bg-[#16473a] w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <ReceiptText className="w-8 h-8 text-slate-300 dark:text-slate-600" />
           </div>
           <p className="text-slate-500 dark:text-slate-400 font-medium">No transactions yet.</p>
@@ -28,7 +28,7 @@ export default function TransactionList({ transactions, onDelete }: any) {
           .map((t: Transaction) => (
             <li 
               key={t.id} 
-              className="group flex items-center justify-between p-4 rounded-2xl border border-slate-50 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 hover:shadow-md transition-all"
+              className="group flex items-center justify-between p-4 rounded-2xl border border-slate-50 dark:border-[#1c4a3b] bg-slate-50/50 dark:bg-[#16473a]/40 hover:bg-white dark:hover:bg-slate-800 hover:shadow-md transition-all"
             >
               <div className="flex items-center gap-4">
                 <div className={`p-2.5 rounded-xl ${
@@ -53,8 +53,9 @@ export default function TransactionList({ transactions, onDelete }: any) {
                   {t.type === 'income' ? '+' : '-'}Rs.{t.amount.toFixed(2)}
                 </span>
                 <button 
-                  onClick={() => onDelete(t.id)} 
-                  className="opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 transition-all rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10"
+                  onClick={() => onDelete(t.id)}
+                  aria-label={`Delete ${t.text}`} 
+                  className="p-2 text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 transition-all rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10"
                 >
                   <Trash2 size={16} />
                 </button>
