@@ -30,6 +30,8 @@ Create and manage repeating financial activity such as:
 - Memberships
 - Other recurring income or expenses
 
+Recurring occurrences are recorded when transactions are loaded, so the dashboard, analytics, and budgets use the same records. Apply [the recurring occurrences migration](backend/migrations/002_recurring_occurrences.sql) in Supabase before deploying this version. Existing transaction records are preserved; past estimated occurrences from existing plans are not backfilled because their historical terms may have changed. New occurrences are recorded after the migration date. Editing or deleting a plan does not rewrite recorded transactions.
+
 Supported frequencies:
 
 - Daily

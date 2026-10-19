@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+from datetime import date
 from fastapi import FastAPI, Depends, HTTPException, Request
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -47,11 +48,17 @@ async def get_session(request: Request, user_id: str = Depends(get_current_user)
 @limiter.limit("60/minute")
 async def get_transactions(
     request: Request,
+    today: date | None = None,
     user_id: str = Depends(get_current_user),
     supabase: Client = Depends(get_authenticated_supabase_client),
 ):
-    response = supabase.table("transactions").select("*").eq("user_id", user_id).execute()
-    return response.data
+    try:
+        supabase.rpc("sync_recurring_transactions", {"p_through": (today or date.today()).isoformat()}).execute()
+        response = supabase.table("transactions").select("*").eq("user_id", user_id).execute()
+        return response.data
+    except Exception:
+        logger.exception("Failed to load transactions")
+        raise HTTPException(status_code=500, detail="Unable to load transactions.")
 
 @app.post("/transactions")
 @limiter.limit("30/minute")
@@ -276,22 +283,20 @@ async def create_recurring(
     user_id: str = Depends(get_current_user),
     supabase: Client = Depends(get_authenticated_supabase_client),
 ):
-    data = {
-        "user_id": user_id,
-        "amount": transaction.amount,
-        "type": transaction.type,
-        "frequency": transaction.frequency,
-        "category": transaction.category,
-        "description": transaction.description,
-        "start_date": transaction.start_date.isoformat(),
-        "end_date": transaction.end_date.isoformat() if transaction.end_date else None
-    }
-    
     try:
-        response = supabase.table("recurring_transactions").insert(data).execute()
-        return response.data[0]
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Unable to process your request.")
+        response = supabase.rpc("create_recurring_with_transaction", {
+            "p_amount": transaction.amount,
+            "p_type": transaction.type,
+            "p_frequency": transaction.frequency,
+            "p_category": transaction.category,
+            "p_description": transaction.description,
+            "p_start_date": transaction.start_date.isoformat(),
+            "p_end_date": transaction.end_date.isoformat() if transaction.end_date else None,
+        }).execute()
+        return response.data
+    except Exception:
+        logger.exception("Failed to create recurring transaction")
+        raise HTTPException(status_code=500, detail="Unable to create recurring transaction.")
 
 @app.get("/recurring-transactions")
 @limiter.limit("60/minute")
@@ -325,6 +330,7 @@ async def update_recurring_transaction(
     request: Request,
     id: str,
     transaction: RecurringTransactionBase,
+    today: date | None = None,
     user_id: str = Depends(get_current_user),
     supabase: Client = Depends(get_authenticated_supabase_client),
 ):
@@ -339,6 +345,7 @@ async def update_recurring_transaction(
     }
 
     try:
+        supabase.rpc("sync_recurring_transactions", {"p_through": (today or date.today()).isoformat()}).execute()
         response = (
             supabase
             .table("recurring_transactions")
@@ -372,10 +379,12 @@ async def update_recurring_transaction(
 async def delete_recurring_transaction(
     request: Request,
     id: str,
+    today: date | None = None,
     user_id: str = Depends(get_current_user),
     supabase: Client = Depends(get_authenticated_supabase_client),
 ):
     try:
+        supabase.rpc("sync_recurring_transactions", {"p_through": (today or date.today()).isoformat()}).execute()
         response = (
             supabase
             .table("recurring_transactions")

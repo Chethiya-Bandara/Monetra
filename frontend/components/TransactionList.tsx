@@ -1,7 +1,8 @@
 import { Transaction } from "@/types";
+import { parseLocalDate } from "@/lib/dates";
 import { Trash2, TrendingDown, TrendingUp, ReceiptText } from "lucide-react";
 
-export default function TransactionList({ transactions, onDelete }: any) {
+export default function TransactionList({ transactions, onDelete }: { transactions: Transaction[]; onDelete: (id: string) => void }) {
   return (
     <div className="dashboard-panel bg-white dark:bg-[#0d3329] p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-[#1c4a3b] h-full transition-colors">
       <div className="flex items-center justify-between mb-6">
@@ -23,7 +24,7 @@ export default function TransactionList({ transactions, onDelete }: any) {
         <ul className="space-y-3 custom-scrollbar overflow-y-auto max-h-[500px] pr-2">
           {[...transactions]
           .sort((a: Transaction, b: Transaction) =>
-            new Date(b.date).getTime() - new Date(a.date).getTime()
+            parseLocalDate(b.date).getTime() - parseLocalDate(a.date).getTime()
           )
           .map((t: Transaction) => (
             <li 
@@ -39,9 +40,9 @@ export default function TransactionList({ transactions, onDelete }: any) {
                   {t.type === 'income' ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
                 </div>
                 <div>
-                  <p className="font-bold text-slate-800 dark:text-slate-200 leading-tight">{t.text}</p>
+                  <p className="font-bold text-slate-800 dark:text-slate-200 leading-tight">{t.description}</p>
                   <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-                    {new Date(t.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                    {parseLocalDate(t.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                   </p>
                 </div>
               </div>
@@ -50,11 +51,11 @@ export default function TransactionList({ transactions, onDelete }: any) {
                 <span className={`font-bold text-lg ${
                   t.type === 'income' ? 'text-emerald-600 dark:text-emerald-500' : 'text-rose-500 dark:text-rose-500'
                 }`}>
-                  {t.type === 'income' ? '+' : '-'}Rs.{t.amount.toFixed(2)}
+                  {t.type === 'income' ? '+' : '-'}Rs.{Number(t.amount).toFixed(2)}
                 </span>
                 <button 
                   onClick={() => onDelete(t.id)}
-                  aria-label={`Delete ${t.text}`} 
+                  aria-label={`Delete ${t.description}`} 
                   className="p-2 text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 transition-all rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10"
                 >
                   <Trash2 size={16} />

@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Transaction } from "@/types";
 import SummaryCards from "../../../components/SummaryCards";
-import TransactionForm from "../../../components/TransactionForm";
+import TransactionForm, { TransactionFormData } from "../../../components/TransactionForm";
 import TransactionList from "../../../components/TransactionList";
 import FinancialInsights from "../../../components/FinancialInsights";
 import { LayoutDashboard, LogOut, BarChart3, ArrowUpRight, CircleDollarSign } from "lucide-react"; 
@@ -15,6 +15,7 @@ import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 import Image from "next/image";
 import { apiUrl } from "@/lib/api";
+import { localDateString, parseLocalDate } from "@/lib/dates";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 interface RecurringTransaction {
@@ -28,64 +29,6 @@ interface RecurringTransaction {
   end_date?: string | null;
 }
 
-const toLocalDate = (value: string) => {
-  const datePart = value.slice(0, 10);
-  const [year, month, day] = datePart.split("-").map(Number);
-
-  return new Date(Date.UTC(year, month - 1, day));
-};
-
-const getCompletedRecurringOccurrences = (
-  transaction: RecurringTransaction
-) => {
-  const startDate = toLocalDate(transaction.start_date);
-  const now = new Date();
-  const today = new Date(
-    Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
-  );
-
-  const endDate = transaction.end_date
-    ? toLocalDate(transaction.end_date)
-    : today;
-  const cutoffDate = endDate < today ? endDate : today;
-
-  if (
-    Number.isNaN(startDate.getTime()) ||
-    Number.isNaN(cutoffDate.getTime()) ||
-    cutoffDate <= startDate
-  ) {
-    return 0;
-  }
-
-  const elapsedDays = Math.floor(
-    (cutoffDate.getTime() - startDate.getTime()) / 86_400_000
-  );
-
-  if (transaction.frequency === "daily") return elapsedDays;
-  if (transaction.frequency === "weekly") return Math.floor(elapsedDays / 7);
-
-  if (transaction.frequency === "monthly") {
-    let elapsedMonths =
-      (cutoffDate.getUTCFullYear() - startDate.getUTCFullYear()) * 12 +
-      cutoffDate.getUTCMonth() -
-      startDate.getUTCMonth();
-    const lastDayOfCutoffMonth = new Date(
-      Date.UTC(
-        cutoffDate.getUTCFullYear(),
-        cutoffDate.getUTCMonth() + 1,
-        0
-      )
-    ).getUTCDate();
-    const dueDay = Math.min(startDate.getUTCDate(), lastDayOfCutoffMonth);
-
-    if (cutoffDate.getUTCDate() < dueDay) elapsedMonths -= 1;
-
-    return Math.max(0, elapsedMonths);
-  }
-
-  return 0;
-};
-
 export default function Home() {
   const router = useRouter();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -93,6 +36,7 @@ export default function Home() {
     RecurringTransaction[]
   >([]);
   const [userName, setUserName] = useState("there");
+  const [loadError, setLoadError] = useState("");
 
   useEffect(() => {
     const loadData = async () => {
@@ -110,7 +54,7 @@ export default function Home() {
       try {
         // Load normal transactions
         const transactionRes = await fetch(
-          apiUrl("/transactions"),
+          apiUrl(`/transactions?today=${localDateString()}`),
           {
             headers: {
               "Authorization": `Bearer ${token}`
@@ -118,10 +62,9 @@ export default function Home() {
           }
         );
 
-        if (transactionRes.ok) {
-          const data = await transactionRes.json();
-          setTransactions(data);
-        }
+        if (!transactionRes.ok) throw new Error("Unable to load transactions. Please reload the page.");
+        const data = await transactionRes.json();
+        setTransactions(data);
 
 
         // Load recurring transactions
@@ -134,168 +77,61 @@ export default function Home() {
           }
         );
 
-        if (recurringRes.ok) {
-          const recurringData = await recurringRes.json();
-          setRecurringTransactions(recurringData);
-        }
+        if (!recurringRes.ok) throw new Error("Unable to load recurring transactions. Please reload the page.");
+        const recurringData = await recurringRes.json();
+        setRecurringTransactions(recurringData);
 
       } catch (err) {
         console.error("Failed to fetch:", err);
-
+        setLoadError(err instanceof Error ? err.message : "Unable to load your data. Please reload the page.");
       }
     };
 
     loadData();
   }, []);
 
-  const handleAdd = async (formData: any) => {
+  const handleAdd = async (formData: TransactionFormData) => {
     const token = localStorage.getItem("token");
-
-    if (!token) {
-      console.error("No authentication token found");
-      return;
-    }
-
+    if (!token) throw new Error("Your session has expired. Please sign in again.");
+    const recurring = formData.is_recurring;
+    const payload = recurring ? {
+      amount: formData.amount, type: formData.type, frequency: formData.frequency,
+      category: formData.category, description: formData.text,
+      start_date: formData.date, end_date: formData.end_date || null,
+    } : {
+      text: formData.text, amount: formData.amount, type: formData.type,
+      date: formData.date, category: formData.category,
+    };
+    let response: Response;
     try {
-      // ==========================================
-      // RECURRING TRANSACTION
-      // ==========================================
-      if (formData.is_recurring) {
+      response = await fetch(apiUrl(recurring ? "/recurring-transactions" : "/transactions"), {
+        method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(payload),
+      });
+    } catch {
+      throw new Error("Could not reach the server. Please check your connection and try again.");
+    }
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      throw new Error(typeof body?.detail === "string" ? body.detail : "Unable to save transaction. Please check the details and try again.");
+    }
+    const result = await response.json();
+    if (recurring) {
+      setRecurringTransactions((prev) => [result.recurring, ...prev]);
+      setTransactions((prev) => [result.transaction, ...prev]);
+    } else {
+      setTransactions((prev) => [result, ...prev]);
+    }
+  };
 
-        const recurringPayload = {
-          amount: Number(formData.amount),
-          type: formData.type.toLowerCase(),
-          frequency: formData.frequency,
-          category: formData.category,
-          description: formData.text,
-          start_date: formData.date || new Date().toISOString().slice(0, 10),
-          end_date: formData.end_date || null,
-        };
-
-        const recurringRes = await fetch(
-          apiUrl("/recurring-transactions"),
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`,
-            },
-            body: JSON.stringify(recurringPayload),
-          }
-        );
-
-        if (!recurringRes.ok) {
-          const errorData = await recurringRes.json();
-
-          console.error(
-            "Recurring transaction error:",
-            errorData.detail
-          );
-
-          return;
-        }
-
-        const recurringTransaction = await recurringRes.json();
-
-        // Immediately add to recurring list
-        setRecurringTransactions((prev) => [
-          recurringTransaction,
-          ...prev,
-        ]);
-
-
-        // ==========================================
-        // CREATE CURRENT TRANSACTION
-        // ==========================================
-
-        const transactionPayload = {
-          text: formData.text,
-          amount: Number(formData.amount),
-          type: formData.type.toLowerCase(),
-          date: formData.date || new Date().toISOString().slice(0, 10),
-          category: formData.category,
-        };
-
-        const transactionRes = await fetch(
-          apiUrl("/transactions"),
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`,
-            },
-            body: JSON.stringify(transactionPayload),
-          }
-        );
-
-        if (!transactionRes.ok) {
-          const errorData = await transactionRes.json();
-
-          console.error(
-            "Transaction creation error:",
-            errorData.detail
-          );
-
-          return;
-        }
-
-        const newTransaction = await transactionRes.json();
-
-        // Immediately add to transaction list
-        setTransactions((prev) => [
-          newTransaction,
-          ...prev,
-        ]);
-
-        return;
-      }
-
-
-      // ==========================================
-      // NORMAL ONE-TIME TRANSACTION
-      // ==========================================
-
-      const payload = {
-        text: formData.text,
-        amount: Number(formData.amount),
-        type: formData.type.toLowerCase(),
-        date: formData.date || new Date().toISOString(),
-        category: formData.category,
-      };
-
-      const res = await fetch(
-        apiUrl("/transactions"),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      if (!res.ok) {
-        const errorData = await res.json();
-
-        console.error(
-          "Transaction creation error:",
-          errorData.detail
-        );
-
-        return;
-      }
-
-      const newTransaction = await res.json();
-
-      // Immediately add to transaction list
-      setTransactions((prev) => [
-        newTransaction,
-        ...prev,
-      ]);
-
-    } catch (err) {
-      console.error("Transaction creation error:", err);
+  const refreshTransactions = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(apiUrl(`/transactions?today=${localDateString()}`), { headers: { Authorization: `Bearer ${token}` } });
+      if (!response.ok) throw new Error("Unable to refresh transactions.");
+      setTransactions(await response.json());
+    } catch {
+      alert("Unable to refresh transactions. Please reload the page.");
     }
   };
 
@@ -314,30 +150,14 @@ export default function Home() {
     }
   };
 
-  const recurringTotals = useMemo(
-    () =>
-      recurringTransactions.reduce(
-        (totals, transaction) => {
-          const accruedAmount =
-            getCompletedRecurringOccurrences(transaction) *
-            Number(transaction.amount);
-
-          totals[transaction.type as "income" | "expense"] += accruedAmount;
-          return totals;
-        },
-        { income: 0, expense: 0 }
-      ),
-    [recurringTransactions]
-  );
-
   const income =
     transactions
       .filter((t) => t.type === "income")
-      .reduce((acc, t) => acc + Number(t.amount), 0) + recurringTotals.income;
+      .reduce((acc, t) => acc + Number(t.amount), 0);
   const expense =
     transactions
       .filter((t) => t.type === "expense")
-      .reduce((acc, t) => acc + Number(t.amount), 0) + recurringTotals.expense;
+      .reduce((acc, t) => acc + Number(t.amount), 0);
   const totalBalance = income - expense;
 
   const recentFlow = useMemo(() => Array.from({ length: 7 }, (_, index) => {
@@ -347,7 +167,7 @@ export default function Home() {
     const nextDay = new Date(day);
     nextDay.setDate(nextDay.getDate() + 1);
     const totals = transactions.reduce((result, transaction) => {
-      const date = new Date(transaction.date);
+      const date = parseLocalDate(transaction.date);
       if (date >= day && date < nextDay) result[transaction.type] += Number(transaction.amount);
       return result;
     }, { income: 0, expense: 0 });
@@ -392,6 +212,7 @@ export default function Home() {
           </div>
         </header>
 
+        {loadError && <p role="alert" className="budget-message budget-error">{loadError}</p>}
         <section className="dashboard-section" aria-label="Financial overview">
           <div className="dashboard-section-heading"><div><p className="dashboard-eyebrow">AT A GLANCE</p><h2>Overview</h2></div><span>Your finances, all in one place</span></div>
           <SummaryCards balance={totalBalance} income={income} expense={expense} />
@@ -423,9 +244,11 @@ export default function Home() {
             transactions={recurringTransactions}
             onUpdate={(updatedTransaction) => {
               setRecurringTransactions((prev) => prev.map((transaction) => transaction.id === updatedTransaction.id ? updatedTransaction : transaction));
+              void refreshTransactions();
             }}
             onDelete={(id) => {
               setRecurringTransactions((prev) => prev.filter((transaction) => transaction.id !== id));
+              void refreshTransactions();
             }}
           /></div>
           <div className="dashboard-insights"><FinancialInsights /></div>

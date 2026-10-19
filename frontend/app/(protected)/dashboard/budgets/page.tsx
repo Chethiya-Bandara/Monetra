@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { BarChart3, CircleDollarSign, LayoutDashboard, LogOut, Pencil, Trash2 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { apiUrl } from "@/lib/api";
+import { localDateString } from "@/lib/dates";
 
 const categories = ["Food", "Transport", "Entertainment", "Health", "Utilities", "General"] as const;
 type Category = typeof categories[number];
@@ -30,7 +31,7 @@ export default function BudgetsPage() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const headers = { Authorization: `Bearer ${token}` };
-    Promise.all([fetch(apiUrl("/budgets"), { headers }), fetch(apiUrl("/transactions"), { headers })])
+    Promise.all([fetch(apiUrl("/budgets"), { headers }), fetch(apiUrl(`/transactions?today=${localDateString()}`), { headers })])
       .then(async ([budgetResponse, transactionResponse]) => {
         if (!budgetResponse.ok || !transactionResponse.ok) throw new Error("Unable to load budgets and spending. Please try again.");
         const [budgetData, transactionData] = await Promise.all([budgetResponse.json(), transactionResponse.json()]);

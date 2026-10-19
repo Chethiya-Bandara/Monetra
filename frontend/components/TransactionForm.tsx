@@ -1,11 +1,23 @@
 "use client";
 import { useState } from "react";
+import { localDateString } from "@/lib/dates";
 import { PlusCircle, Tag, Calendar, RefreshCw } from "lucide-react";
 
 const CATEGORIES = ["Food", "Transport", "Entertainment", "Health", "Utilities", "General"];
 const FREQUENCIES = ["daily", "weekly", "monthly"];
 
-export default function TransactionForm({ onAdd }: any) {
+export interface TransactionFormData {
+  text: string;
+  amount: number;
+  category: string;
+  type: "income" | "expense";
+  date: string;
+  is_recurring: boolean;
+  frequency?: string;
+  end_date?: string | null;
+}
+
+export default function TransactionForm({ onAdd }: { onAdd: (data: TransactionFormData) => Promise<void> }) {
   const [text, setText] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("General");
@@ -15,17 +27,19 @@ export default function TransactionForm({ onAdd }: any) {
   const [isRecurring, setIsRecurring] = useState(false);
   const [frequency, setFrequency] = useState("monthly");
   const [endDate, setEndDate] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
+    if (saving) return;
     e.preventDefault();
     
     const baseData = {
-      id: crypto.randomUUID(),
       text,
       category,
       amount: parseFloat(amount),
       type,
-      date: new Date().toISOString().slice(0, 10),
+      date: localDateString(),
     };
 
     // If recurring, add the extra fields
@@ -33,13 +47,19 @@ export default function TransactionForm({ onAdd }: any) {
       ? { ...baseData, frequency, end_date: endDate || null, is_recurring: true }
       : { ...baseData, is_recurring: false };
 
-    onAdd(finalData);
-    
-    // Reset form
-    setText(""); 
-    setAmount("");
-    setCategory("General");
-    setEndDate("");
+    setSaving(true);
+    setError("");
+    try {
+      await onAdd(finalData);
+      setText("");
+      setAmount("");
+      setCategory("General");
+      setEndDate("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to save transaction. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -51,6 +71,7 @@ export default function TransactionForm({ onAdd }: any) {
         <button 
           type="button"
           onClick={() => setIsRecurring(!isRecurring)}
+          disabled={saving}
           className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
             isRecurring 
               ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 ring-1 ring-indigo-200 dark:ring-emerald-500/30" 
@@ -63,6 +84,7 @@ export default function TransactionForm({ onAdd }: any) {
       </div>
 
       <form onSubmit={submit} className="space-y-5">
+        <fieldset disabled={saving} className="space-y-5 disabled:opacity-70">
         <div className="flex p-1 bg-slate-100 dark:bg-[#16473a] rounded-xl">
           {(['expense', 'income'] as const).map((t) => (
             <button 
@@ -157,10 +179,12 @@ export default function TransactionForm({ onAdd }: any) {
           )}
         </div>
 
-        <button className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-semibold shadow-lg shadow-indigo-200 dark:shadow-none transition-all active:scale-[0.98]">
+        {error && <p role="alert" className="text-sm text-rose-600 dark:text-rose-400">{error}</p>}
+        <button type="submit" className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-semibold shadow-lg shadow-indigo-200 dark:shadow-none transition-all active:scale-[0.98]">
           <PlusCircle className="w-5 h-5" /> 
-          {isRecurring ? "Set Recurring Plan" : "Add Transaction"}
+          {saving ? "Saving..." : isRecurring ? "Set Recurring Plan" : "Add Transaction"}
         </button>
+        </fieldset>
       </form>
     </div>
   );

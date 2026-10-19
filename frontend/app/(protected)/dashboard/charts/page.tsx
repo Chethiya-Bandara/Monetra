@@ -20,6 +20,9 @@ import Image from "next/image";
 import { ThemeToggle } from "../../../../components/ThemeToggle";
 import { useRouter } from "next/navigation";
 import { apiUrl } from "@/lib/api";
+import { localDateString } from "@/lib/dates";
+import { parseLocalDate } from "@/lib/dates";
+import { Transaction } from "@/types";
 
 import {
   BarChart,
@@ -39,16 +42,6 @@ import {
   Line,
 } from "recharts";
 
-interface Transaction {
-  id?: string;
-  amount: number;
-  type: "income" | "expense";
-  date: string;
-  category: string;
-  description?: string;
-  text?: string;
-}
-
 export default function ChartsPage() {
   const router = useRouter();
 
@@ -58,6 +51,7 @@ export default function ChartsPage() {
   };
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loadError, setLoadError] = useState("");
 
   const COLORS = [
     "#ff0000",
@@ -73,7 +67,7 @@ export default function ChartsPage() {
       const token = localStorage.getItem("token");
 
       try {
-        const res = await fetch(apiUrl("/transactions"), {
+        const res = await fetch(apiUrl(`/transactions?today=${localDateString()}`), {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -87,6 +81,7 @@ export default function ChartsPage() {
         setTransactions(data);
       } catch (err) {
         console.error("Fetch error:", err);
+        setLoadError("Unable to load transactions. Please reload the page.");
       }
     };
 
@@ -150,7 +145,7 @@ export default function ChartsPage() {
     }
 
     transactions.forEach((transaction) => {
-      const transactionDate = new Date(transaction.date);
+      const transactionDate = parseLocalDate(transaction.date);
 
       transactionDate.setHours(0, 0, 0, 0);
 
@@ -181,7 +176,7 @@ export default function ChartsPage() {
     > = {};
 
     transactions.forEach((transaction) => {
-      const date = new Date(transaction.date);
+      const date = parseLocalDate(transaction.date);
 
       const key = `${date.getFullYear()}-${date.getMonth()}`;
 
@@ -247,8 +242,8 @@ export default function ChartsPage() {
     return [...transactions]
       .sort(
         (a, b) =>
-          new Date(a.date).getTime() -
-          new Date(b.date).getTime()
+          parseLocalDate(a.date).getTime() -
+          parseLocalDate(b.date).getTime()
       )
       .map((transaction) => {
         runningBalance +=
@@ -257,7 +252,7 @@ export default function ChartsPage() {
             : -Number(transaction.amount);
 
         return {
-          date: new Date(transaction.date).toLocaleDateString(
+          date: parseLocalDate(transaction.date).toLocaleDateString(
             "en-US",
             {
               month: "short",
@@ -291,7 +286,7 @@ export default function ChartsPage() {
     transactions.forEach((transaction) => {
       if (transaction.type !== "expense") return;
 
-      const transactionDate = new Date(transaction.date);
+      const transactionDate = parseLocalDate(transaction.date);
 
       transactionDate.setHours(0, 0, 0, 0);
 
@@ -321,7 +316,7 @@ export default function ChartsPage() {
     transactions
       .filter((t) => t.type === "expense")
       .forEach((t) => {
-        const day = new Date(t.date).getDay();
+        const day = parseLocalDate(t.date).getDay();
 
         days[day].expense += Number(t.amount);
       });
@@ -418,6 +413,7 @@ export default function ChartsPage() {
             <button onClick={handleLogout} className="dashboard-logout"><LogOut size={17} /> Logout</button>
           </div>
         </header>
+        {loadError && <p role="alert" className="budget-message budget-error">{loadError}</p>}
         <div className="analytics-content space-y-6">
           <div className="dashboard-section-heading"><div><p className="dashboard-eyebrow">AT A GLANCE</p><h2>Overview</h2></div><span>Your finances, all in one place</span></div>
           {/* SUMMARY CARDS */}
@@ -714,9 +710,7 @@ export default function ChartsPage() {
                         <div>
 
                           <p className="font-medium text-emerald-950 dark:text-white">
-                            {transaction.description ||
-                              transaction.text ||
-                              "Expense"}
+                            {transaction.description || "Expense"}
                           </p>
 
                           <p className="text-sm text-emerald-700 dark:text-emerald-300">

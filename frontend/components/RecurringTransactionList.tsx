@@ -14,6 +14,7 @@ import {
   Tag,
 } from "lucide-react";
 import { apiUrl } from "@/lib/api";
+import { localDateString, parseLocalDate } from "@/lib/dates";
 
 interface RecurringTransaction {
   id: string;
@@ -80,7 +81,7 @@ export default function RecurringTransactionList({
   const formatDate = (date: string) => {
     if (!date) return "No date";
 
-    return new Date(date).toLocaleDateString("en-LK", {
+    return parseLocalDate(date).toLocaleDateString("en-LK", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -141,7 +142,7 @@ export default function RecurringTransactionList({
       };
 
       const res = await fetch(
-        apiUrl(`/recurring-transactions/${id}`),
+        apiUrl(`/recurring-transactions/${id}?today=${localDateString()}`),
         {
           method: "PUT",
           headers: {
@@ -194,7 +195,7 @@ export default function RecurringTransactionList({
 
     try {
       const res = await fetch(
-        apiUrl(`/recurring-transactions/${id}`),
+        apiUrl(`/recurring-transactions/${id}?today=${localDateString()}`),
         {
           method: "DELETE",
           headers: {
