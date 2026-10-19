@@ -611,9 +611,28 @@ npm run build
 
 Both commands should complete successfully before deployment.
 
-### Backend
+### Backend pytest suite
 
-Start the development server:
+From the project root in PowerShell:
+
+```powershell
+cd backend
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+To run one test or see detailed names:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -v
+.\.venv\Scripts\python.exe -m pytest tests/test_api.py -k recurring -v
+```
+
+If the virtual environment does not exist, create it first with `python -m venv .venv`. The tests use dummy configuration and replace Supabase and Gemini with in-memory fakes; they do not contact your database or require an API key. They cover authentication boundaries, validation, user-scoped API operations, error responses, login rate limiting, AI data scoping, and the API calls used for recurring transactions.
+
+These are offline API tests. They do **not** execute the recurring SQL functions, verify Supabase row-level security or migrations, test actual external services, or exercise the browser UI. Verify those separately against a dedicated test project; never run destructive integration tests against production data.
+
+To start the backend manually:
 
 ```powershell
 cd backend
